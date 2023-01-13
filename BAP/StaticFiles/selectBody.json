@@ -1,0 +1,21 @@
+﻿{
+  "context": {
+    "domain": "dsep:jobs",
+    "country": "IND",
+
+    "action": "select",
+    "core_version": "1.0.0",
+    "bap_id": "nic2004:74910.BPP",
+    "bap_uri": "https://18bhai62x2.execute-api.ap-south-1.amazonaws.com/dev/",
+    "transaction_id": "",
+    "message_id": "",
+    "timestamp": ""
+  },
+  "message": {
+    "order": {
+      "item": {
+       
+      }
+    }
+  }
+}

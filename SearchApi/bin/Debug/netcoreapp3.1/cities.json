@@ -1,0 +1,39 @@
+﻿[
+  {
+    "stdcode": "011",
+    "city": "delhi"
+  },
+  {
+    "stdcode": "022",
+    "city": "mumbai"
+  },
+  {
+    "stdcode": "033",
+    "city": "kolkata"
+  },
+  {
+    "stdcode": "044",
+    "city": "chennai"
+  },
+  {
+    "stdcode": "040",
+    "city": "hyderabad"
+  },
+  {
+    "stdcode": "080",
+    "city": "bangalore"
+  },
+  {
+    "stdcode": "079",
+    "city": "ahmedabad"
+  },
+  {
+    "stdcode": "0484",
+    "city": "kochi"
+  },
+  {
+    "stdcode": "0522",
+    "city": "lucknow"
+  }
+]
+   
