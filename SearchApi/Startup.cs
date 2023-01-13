@@ -26,8 +26,8 @@ namespace search
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddSingleton<Repository>();
-            services.AddScoped<FileHandler>();
+            //services.AddSingleton<Repository>();
+            //services.AddScoped<FileHandler>();
             services.AddScoped<OpensearchHandler>();
             services.AddCors(options =>
             {

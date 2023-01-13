@@ -60,14 +60,14 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Volumes/Data-disk/src/BPP-G/BAP/BAP.csproj",
+      "projectUniqueName": "/Volumes/Data-disk/src/DSEP/BAP/BAP.csproj",
       "projectName": "BAP",
-      "projectPath": "/Volumes/Data-disk/src/BPP-G/BAP/BAP.csproj",
+      "projectPath": "/Volumes/Data-disk/src/DSEP/BAP/BAP.csproj",
       "packagesPath": "/Users/sanjaykumar/.nuget/packages/",
-      "outputPath": "/Volumes/Data-disk/src/BPP-G/BAP/obj/",
+      "outputPath": "/Volumes/Data-disk/src/DSEP/BAP/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/Volumes/Data-disk/src/BPP-G/BAP/NuGet.Config",
+        "/Volumes/Data-disk/src/DSEP/BAP/NuGet.Config",
         "/Users/sanjaykumar/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [

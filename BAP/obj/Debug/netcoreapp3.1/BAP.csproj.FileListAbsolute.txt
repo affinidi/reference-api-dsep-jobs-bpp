@@ -29,12 +29,12 @@
 /Volumes/Data-disk/src/BPP-G/BAP/obj/Debug/netcoreapp3.1/BAP.dll
 /Volumes/Data-disk/src/BPP-G/BAP/obj/Debug/netcoreapp3.1/BAP.pdb
 /Volumes/Data-disk/src/BPP-G/BAP/obj/Debug/netcoreapp3.1/BAP.genruntimeconfig.cache
+/Volumes/Data-disk/src/DSEP/BAP/bin/Debug/netcoreapp3.1/nuget.config
 /Volumes/Data-disk/src/DSEP/BAP/bin/Debug/netcoreapp3.1/appsettings.Development.json
 /Volumes/Data-disk/src/DSEP/BAP/bin/Debug/netcoreapp3.1/appsettings.json
 /Volumes/Data-disk/src/DSEP/BAP/bin/Debug/netcoreapp3.1/StaticFiles/ConfirmBody.json
 /Volumes/Data-disk/src/DSEP/BAP/bin/Debug/netcoreapp3.1/StaticFiles/selectBody.json
 /Volumes/Data-disk/src/DSEP/BAP/bin/Debug/netcoreapp3.1/test.json
-/Volumes/Data-disk/src/DSEP/BAP/bin/Debug/netcoreapp3.1/nuget.config
 /Volumes/Data-disk/src/DSEP/BAP/bin/Debug/netcoreapp3.1/BAP
 /Volumes/Data-disk/src/DSEP/BAP/bin/Debug/netcoreapp3.1/StaticFiles/SearchContext.json
 /Volumes/Data-disk/src/DSEP/BAP/bin/Debug/netcoreapp3.1/BAP.deps.json

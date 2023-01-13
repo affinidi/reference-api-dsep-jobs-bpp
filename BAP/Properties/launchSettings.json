@@ -23,8 +23,8 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "RetrieveUrl": "https://18bhai62x2.execute-api.ap-south-1.amazonaws.com/dev/jportal",
-        "BGUrl": "http://localhost:6005",
-        "BPPURL": "http://localhost:6005"
+        "BGUrl": "https://localhost:6005",
+        "BPPURL": "https://localhost:6005"
       }
     }
   }
