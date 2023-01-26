@@ -1,7 +1,10 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
-using bpp.Models;
+using System.Threading.Tasks;
+using Beckn.Models;
 using Newtonsoft.Json;
 using search.Models;
 
@@ -9,58 +12,103 @@ namespace bpp.Helpers
 {
     public class ConfirmHandler
     {
+        string aplicationID = string.Empty;
+        string jobId = string.Empty;
         public ConfirmHandler()
         {
         }
 
-        internal void SaveApplication(ConfirmBody body)
+        internal async Task SaveApplication(ConfirmBody body)
         {
-            var application = new Application(body.Message.Order.item.Id);
-            application.transactionid = body.Context.TransactionId;
-            application.orderId = body.Message.Order?.Id;
-            application.id = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();//Guid.NewGuid().ToString("n");
-            application.person = body.Message?.Order?.Fulfillment?.Customer?.Person;
-            application.contact= body.Message?.Order?.Fulfillment?.Customer?.Contact;
-            application.docs= body.Message?.Order?.Documents;
 
 
-          
-            HttpResponseMessage response = null;
+            foreach (Item item in body.Message.Order?.Items)
+            {
+                var application = new Application(item.Id);
+                application.transactionid = body.Context.TransactionId;
+                application.orderId = body.Message.Order?.Id;
+                application.id = aplicationID = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();//Guid.NewGuid().ToString("n");
+                var fulfillment = body.Message?.Order?.Fulfillments.Where(x => x.Id == item.FulfillmentIds.FirstOrDefault()).FirstOrDefault();
+                application.person = fulfillment?.Customer?.Person;
+                application.contact = fulfillment?.Customer?.Contact;
+                // application.docs = body.Message?.Order?;
+
+
+
+                HttpResponseMessage response = null;
+                try
+                {
+
+                    SetJobTitle(application);
+
+                    var json = JsonConvert.SerializeObject(application, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                    Console.WriteLine(" application Details");
+                    Console.WriteLine(json);
+
+                    var url = Environment.GetEnvironmentVariable("searchbaseUrl")?.ToString();
+                    url = url + "/saveapplication";
+                    using var client = new HttpClient();
+
+                    response = client.PostAsync(url, data).Result;
+
+                    var result = response.Content.ReadAsStringAsync().Result;
+                    Console.WriteLine("****************");
+                    Console.WriteLine("ApplicationId is : " + result);
+
+                    await SendConfirmation(application, body);
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Search Error");
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine(response?.Content.ReadAsStringAsync().Result);
+
+                }
+
+            }
+
+        }
+
+        private static async Task SendConfirmation(Application application, ConfirmBody body)
+        {
+
+            var onConfirmBody = JsonConvert.DeserializeObject<OnConfirmBody>(File.ReadAllText("StaticFiles/OnConfirmBody.json"));
+            onConfirmBody.Context.MessageId = body.Context.MessageId;
+            onConfirmBody.Context.TransactionId = body.Context.TransactionId;
+            onConfirmBody.Context.Timestamp = new DateTime();
+
+            onConfirmBody.Message.Order.Id = application.id;
+            onConfirmBody.Message.Order.Items.Add(new Item() { Id = application.jobid });
+
             try
             {
-             
-                SetJobTitle(application);
-
-                var json = JsonConvert.SerializeObject(application, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+                var json = JsonConvert.SerializeObject(onConfirmBody, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
-                Console.WriteLine(" application Details");
-                Console.WriteLine(json);
 
-                var url = Environment.GetEnvironmentVariable("searchbaseUrl")?.ToString();
-                url = url + "/saveapplication";
+                var url = body.Context.BapUri + "on_confirm";
                 using var client = new HttpClient();
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("authorization", AuthUtil.createAuthorizationHeader(json));
+                var response = await client.PostAsync(url, data);
 
-                response = client.PostAsync(url, data).Result;
-
-                var result = response.Content.ReadAsStringAsync();
-                Console.WriteLine(result);
-
+                var result = await response.Content.ReadAsStringAsync();
+                Console.WriteLine("result for on_confirm :" + result);
 
             }
-            catch (Exception e)
+            catch (HttpRequestException e)
             {
-                Console.WriteLine("Search Error");
-                Console.WriteLine(e.Message);
-                Console.WriteLine(response?.Content.ReadAsStringAsync().Result);
-
+                Console.WriteLine("\nException Caught!");
+                Console.WriteLine("Message :{0} ", e.Message);
             }
+
         }
 
         private static void SetJobTitle(Application application)
         {
             var url = Environment.GetEnvironmentVariable("searchbaseUrl")?.ToString();
             url = url + "/getbyid/" + application.jobid;
-         
+
             Console.WriteLine(" internal job search at : " + url);
 
             using var client = new HttpClient();

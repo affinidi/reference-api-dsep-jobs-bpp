@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "JHM8NyMAQs8zLoRuDIevpr/d4Fkcl5wvHOYYBmhUAQ7uyo3L7y5B8udxAH2ByOXEQNOmMjbF6KYD5pNu+K3lqQ==",
+  "success": true,
+  "projectFilePath": "/Volumes/Data-disk/src/DSEP/auth/auth.csproj",
+  "expectedPackageFiles": [
+    "/Users/sanjaykumar/.nuget/packages/microsoft.typescript.msbuild/4.9.4/microsoft.typescript.msbuild.4.9.4.nupkg.sha512"
+  ],
+  "logs": []
+}

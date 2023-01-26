@@ -1,28 +1,31 @@
 ﻿<Properties StartupConfiguration="{BD6B4382-C4B0-4154-82C8-BB016DBA3114}|web">
-  <MonoDevelop.Ide.ItemProperties.BAP PreferredExecutionTarget="/Applications/Google Chrome.app" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
-  <MultiItemStartupConfigurations />
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.ItemProperties.bpp PreferredExecutionTarget="/Applications/Google Chrome.app" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="BPP/appsettings.json">
+  <MonoDevelop.Ide.Workbench ActiveDocument="BPP/Helpers/SelectHandler.cs">
     <Files>
-      <File FileName="SearchApi/Startup.cs" Line="30" Column="49" />
-      <File FileName="SearchApi/Controllers/SearchController.cs" Line="1" Column="1" />
-      <File FileName="BPP/web.config" Line="1" Column="1" />
-      <File FileName="BPP/Program.cs" Line="1" Column="1" />
-      <File FileName="BPP/appsettings.json" Line="12" Column="1" />
+      <File FileName="BPP/Helpers/ConfirmHandler.cs" />
+      <File FileName="BPP/StaticFiles/OnConfirmBody.json" />
+      <File FileName="BPP/Helpers/SearchHandler.cs" />
+      <File FileName="BPP/Helpers/SelectHandler.cs" Line="154" Column="19" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="DSEP" expanded="True">
-            <Node name="BAP" selected="True" />
+            <Node name="bpp" expanded="True">
+              <Node name="Controllers" expanded="True" />
+              <Node name="Helpers" expanded="True" />
+              <Node name="StaticFiles" expanded="True" />
+            </Node>
           </Node>
         </State>
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.ItemProperties.BAP PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.ItemProperties.bpp PreferredExecutionTarget="/Applications/Google Chrome.app" />
 </Properties>

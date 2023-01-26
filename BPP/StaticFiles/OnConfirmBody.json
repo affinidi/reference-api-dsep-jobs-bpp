@@ -1,0 +1,21 @@
+﻿{
+    "context": {
+        "domain": "dsep:jobs",
+        "country": "IND",
+        "action": "on_confirm",
+        "core_version": "1.0.0",
+        "bbp_id": "affinidi.bpp",
+        "bbp_uri": "http://DSEP-nlb-d3ed9a3f85596080.elb.ap-south-1.amazonaws.com/",
+        "transaction_id": "",
+        "message_id": "",
+        "timestamp": ""
+    },
+    "message": {
+        "order": {
+            "id": "",
+            "item": [
+
+            ]
+        }
+    }
+}

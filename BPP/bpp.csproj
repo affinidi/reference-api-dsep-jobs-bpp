@@ -10,21 +10,28 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'web' " />
   <ItemGroup>
+    <PackageReference Include="Beckn.DSEP" Version="1.0.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.5.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="5.5.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="5.5.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="5.5.1" />
+    <PackageReference Include="Sodium.Core" Version="1.3.3" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.4" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Helpers\" />
+    <None Remove="Sodium.Core" />
+    <None Remove="StaticFiles\" />
+    <None Remove="Models\.DS_Store" />
+    <None Remove="Beckn.DSEP" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Helpers\" />
     <Folder Include="wwwroot\Models\" />
+    <Folder Include="StaticFiles\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\.editorconfig" />
@@ -33,5 +40,143 @@
   <ItemGroup>
     <Content Remove="wwwroot\Models\.DS_Store" />
     <Content Remove="wwwroot\Models\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Condition="'$(ExcludeConfigFilesFromBuildOutput)'!='true'" Update="StaticFiles\SearchContext.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Models\AllOfProviderLocationsItems.cs" />
+    <Compile Remove="Models\Circle.cs" />
+    <Compile Remove="Models\CancellationReasonsBody.cs" />
+    <Compile Remove="Models\Ack.cs" />
+    <Compile Remove="Models\Descriptor.cs" />
+    <Compile Remove="Models\City.cs" />
+    <Compile Remove="Models\Catalog.cs" />
+    <Compile Remove="Models\Address.cs" />
+    <Compile Remove="Models\AddOn.cs" />
+    <Compile Remove="Models\Billing.cs" />
+    <Compile Remove="Models\Dimensions.cs" />
+    <Compile Remove="Models\CancellationTermReturnPolicy.cs" />
+    <Compile Remove="Models\CancellationTerm.cs" />
+    <Compile Remove="Models\CancellationReasonsMessage.cs" />
+    <Compile Remove="Models\CancelBody.cs" />
+    <Compile Remove="Models\Credential.cs" />
+    <Compile Remove="Models\CancelMessage.cs" />
+    <Compile Remove="Models\Contact.cs" />
+    <Compile Remove="Models\CancellationTermRefundPolicy.cs" />
+    <Compile Remove="Models\Category.cs" />
+    <Compile Remove="Models\CancellationPolicy.cs" />
+    <Compile Remove="Models\DescriptorAdditionalDesc.cs" />
+    <Compile Remove="Models\ConfirmBody.cs" />
+    <Compile Remove="Models\Country.cs" />
+    <Compile Remove="Models\Context.cs" />
+    <Compile Remove="Models\Agent.cs" />
+    <Compile Remove="Models\Document.cs" />
+    <Compile Remove="Models\OnInitMessageOrderItems.cs" />
+    <Compile Remove="Models\ItemQuantityMaximum.cs" />
+    <Compile Remove="Models\SearchMessage.cs" />
+    <Compile Remove="Models\Organization.cs" />
+    <Compile Remove="Models\MediaFile.cs" />
+    <Compile Remove="Models\StatusBody.cs" />
+    <Compile Remove="Models\Rating.cs" />
+    <Compile Remove="Models\GetFeedbackFormBody.cs" />
+    <Compile Remove="Models\OnTrackMessage.cs" />
+    <Compile Remove="Models\OnRatingBody.cs" />
+    <Compile Remove="Models\Feedback.cs" />
+    <Compile Remove="Models\TrackMessage.cs" />
+    <Compile Remove="Models\InlineResponse2001.cs" />
+    <Compile Remove="Models\RatingCategoriesBody.cs" />
+    <Compile Remove="Models\Scalar.cs" />
+    <Compile Remove="Models\Order.cs" />
+    <Compile Remove="Models\UpdateBody.cs" />
+    <Compile Remove="Models\Subscriber.cs" />
+    <Compile Remove="Models\OnInitBody.cs" />
+    <Compile Remove="Models\Vehicle.cs" />
+    <Compile Remove="Models\Policy.cs" />
+    <Compile Remove="Models\SelectBody.cs" />
+    <Compile Remove="Models\GetRatingCategoriesBody.cs" />
+    <Compile Remove="Models\Fulfillment.cs" />
+    <Compile Remove="Models\QuotationBreakup.cs" />
+    <Compile Remove="Models\RatingAck.cs" />
+    <Compile Remove="Models\FulfillmentStart.cs" />
+    <Compile Remove="Models\FulfillmentAuthorization.cs" />
+    <Compile Remove="Models\Fee.cs" />
+    <Compile Remove="Models\OperatorExperience.cs" />
+    <Compile Remove="Models\StructuredAddress.cs" />
+    <Compile Remove="Models\OnSupportMessage.cs" />
+    <Compile Remove="Models\Intent.cs" />
+    <Compile Remove="Models\ScalarRange.cs" />
+    <Compile Remove="Models\OnInitMessageOrderProviderLocation.cs" />
+    <Compile Remove="Models\Time.cs" />
+    <Compile Remove="Models\ItemRefundPolicy.cs" />
+    <Compile Remove="Models\SupportBody.cs" />
+    <Compile Remove="Models\FeedbackUrl.cs" />
+    <Compile Remove="Models\OnInitMessage.cs" />
+    <Compile Remove="Models\OnInitMessageOrderAddOns.cs" />
+    <Compile Remove="Models\OnSelectBody.cs" />
+    <Compile Remove="Models\TimeRange.cs" />
+    <Compile Remove="Models\Support.cs" />
+    <Compile Remove="Models\UpdateMessage.cs" />
+    <Compile Remove="Models\OnInitMessageOrderOffers.cs" />
+    <Compile Remove="Models\Person.cs" />
+    <Compile Remove="Models\SelectMessage.cs" />
+    <Compile Remove="Models\Offer.cs" />
+    <Compile Remove="Models\OnConfirmBody.cs" />
+    <Compile Remove="Models\Error.cs" />
+    <Compile Remove="Models\XInputResponse.cs" />
+    <Compile Remove="Models\OnUpdateBody.cs" />
+    <Compile Remove="Models\Quotation.cs" />
+    <Compile Remove="Models\OnStatusBody.cs" />
+    <Compile Remove="Models\TrackingData.cs" />
+    <Compile Remove="Models\Provider.cs" />
+    <Compile Remove="Models\GetFeedbackFormMessage.cs" />
+    <Compile Remove="Models\ReplacementTerm.cs" />
+    <Compile Remove="Models\RatingBody.cs" />
+    <Compile Remove="Models\GetFeedbackCategoriesBody.cs" />
+    <Compile Remove="Models\Option.cs" />
+    <Compile Remove="Models\GetReturnReasonsBody.cs" />
+    <Compile Remove="Models\Schedule.cs" />
+    <Compile Remove="Models\TrackBody.cs" />
+    <Compile Remove="Models\InlineResponse200.cs" />
+    <Compile Remove="Models\SupportMessage.cs" />
+    <Compile Remove="Models\ReturnReasonsBody.cs" />
+    <Compile Remove="Models\ItemQuantityAllocated.cs" />
+    <Compile Remove="Models\Tracking.cs" />
+    <Compile Remove="Models\StatusMessage.cs" />
+    <Compile Remove="Models\FeedbackFormBody.cs" />
+    <Compile Remove="Models\OnSelectMessageOrder.cs" />
+    <Compile Remove="Models\Payment.cs" />
+    <Compile Remove="Models\ModelOperator.cs" />
+    <Compile Remove="Models\Image.cs" />
+    <Compile Remove="Models\Price.cs" />
+    <Compile Remove="Models\InitBody.cs" />
+    <Compile Remove="Models\OnSearchBody.cs" />
+    <Compile Remove="Models\State.cs" />
+    <Compile Remove="Models\Tag.cs" />
+    <Compile Remove="Models\Item.cs" />
+    <Compile Remove="Models\FullAddress.cs" />
+    <Compile Remove="Models\FeedbackFormElement.cs" />
+    <Compile Remove="Models\OnSelectMessage.cs" />
+    <Compile Remove="Models\InlineResponse200Message.cs" />
+    <Compile Remove="Models\FulfillmentEnd.cs" />
+    <Compile Remove="Models\TagGroup.cs" />
+    <Compile Remove="Models\SearchBody.cs" />
+    <Compile Remove="Models\ItemQuantity.cs" />
+    <Compile Remove="Models\XInputResponseInner.cs" />
+    <Compile Remove="Models\Location.cs" />
+    <Compile Remove="Models\OnInitMessageOrder.cs" />
+    <Compile Remove="Models\OnTrackBody.cs" />
+    <Compile Remove="Models\OnInitMessageOrderProvider.cs" />
+    <Compile Remove="Models\Form.cs" />
+    <Compile Remove="Models\OnCancelBody.cs" />
+    <Compile Remove="Models\FeedbackCategoriesBody.cs" />
+    <Compile Remove="Models\OnSearchMessage.cs" />
+    <Compile Remove="Models\XInput.cs" />
+    <Compile Remove="Models\Language.cs" />
+    <Compile Remove="Models\FulfillmentCustomer.cs" />
+    <Compile Remove="Models\OnSupportBody.cs" />
+    <Compile Remove="Models\GetCancellationReasonsBody.cs" />
   </ItemGroup>
 </Project>

@@ -1,20 +1,19 @@
 {
   "format": 1,
   "restore": {
-    "/Volumes/Data-disk/src/DSEP/SearchApi/search.csproj": {}
+    "/Volumes/Data-disk/src/DSEP/auth/auth.csproj": {}
   },
   "projects": {
-    "/Volumes/Data-disk/src/DSEP/SearchApi/search.csproj": {
+    "/Volumes/Data-disk/src/DSEP/auth/auth.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Volumes/Data-disk/src/DSEP/SearchApi/search.csproj",
-        "projectName": "search",
-        "projectPath": "/Volumes/Data-disk/src/DSEP/SearchApi/search.csproj",
+        "projectUniqueName": "/Volumes/Data-disk/src/DSEP/auth/auth.csproj",
+        "projectName": "auth",
+        "projectPath": "/Volumes/Data-disk/src/DSEP/auth/auth.csproj",
         "packagesPath": "/Users/sanjaykumar/.nuget/packages/",
-        "outputPath": "/Volumes/Data-disk/src/DSEP/SearchApi/obj/",
+        "outputPath": "/Volumes/Data-disk/src/DSEP/auth/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Volumes/Data-disk/src/DSEP/SearchApi/NuGet.Config",
           "/Users/sanjaykumar/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
@@ -39,21 +38,11 @@
         "netcoreapp3.1": {
           "targetAlias": "netcoreapp3.1",
           "dependencies": {
-            "Newtonsoft.Json": {
+            "Microsoft.TypeScript.MSBuild": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
               "target": "Package",
-              "version": "[13.0.1, )"
-            },
-            "OpenSearch.Client": {
-              "target": "Package",
-              "version": "[1.2.0, )"
-            },
-            "OpenSearch.Client.JsonNetSerializer": {
-              "target": "Package",
-              "version": "[1.2.0, )"
-            },
-            "OpenSearch.Net": {
-              "target": "Package",
-              "version": "[1.2.0, )"
+              "version": "[4.9.4, )"
             }
           },
           "imports": [
@@ -68,14 +57,11 @@
           "assetTargetFallback": true,
           "warn": true,
           "frameworkReferences": {
-            "Microsoft.AspNetCore.App": {
-              "privateAssets": "none"
-            },
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.102/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.101/RuntimeIdentifierGraph.json"
         }
       }
     }
