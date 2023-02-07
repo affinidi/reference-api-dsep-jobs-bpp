@@ -11,7 +11,7 @@ namespace search.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class OpensearchController: ControllerBase
+    public class OpensearchController : ControllerBase
     {
         OpensearchHandler _opensearchHandler;
         public OpensearchController(OpensearchHandler opensearchHandler)
@@ -29,18 +29,27 @@ namespace search.Controllers
         }
 
         [HttpGet]
+        [Route("application/{id}")]
+        public Application Applicationbyid(string id)
+        {
+
+            return _opensearchHandler.FindApplication(id);
+
+        }
+
+        [HttpGet]
         [Route("getallapplicantions")]
         public List<Application> GetApplications() => _opensearchHandler.FindApplications();
 
         [HttpPost]
         public IActionResult Post(Job job)
         {
-           // var jobId = System.Guid.NewGuid().ToString();
+            // var jobId = System.Guid.NewGuid().ToString();
             var json = JsonConvert.SerializeObject(job);
 
-            var jobid= CreateMD5(json);
+            var jobid = CreateMD5(json);
             job.id = jobid;
-            var result= _opensearchHandler.SaveDoc(job);
+            var result = _opensearchHandler.SaveDoc(job);
             return Ok(result);
         }
 
@@ -56,19 +65,19 @@ namespace search.Controllers
                 //return Convert.ToHexString(hashBytes); // .NET 5 +
 
                 //Convert the byte array to hexadecimal string prior to.NET 5
-                 StringBuilder sb = new System.Text.StringBuilder();
+                StringBuilder sb = new System.Text.StringBuilder();
                 for (int i = 0; i < hashBytes.Length; i++)
                 {
                     sb.Append(hashBytes[i].ToString("X2"));
                 }
                 return sb.ToString();
             }
-        } 
+        }
         [HttpPost]
         [Route("saveapplication")]
         public IActionResult Post([FromBody] Application application)
         {
-           
+
             var result = _opensearchHandler.SaveDoc(application);
             return Ok(result);
         }

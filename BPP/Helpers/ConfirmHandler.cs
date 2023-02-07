@@ -43,20 +43,28 @@ namespace bpp.Helpers
 
                     var json = JsonConvert.SerializeObject(application, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
-                    Console.WriteLine(" application Details");
-                    Console.WriteLine(json);
+                    Console.WriteLine(" application Details : " + json);
 
                     var url = Environment.GetEnvironmentVariable("searchbaseUrl")?.ToString();
                     url = url + "/saveapplication";
                     using var client = new HttpClient();
 
                     response = client.PostAsync(url, data).Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var result = response.Content.ReadAsStringAsync().Result;
+                        Console.WriteLine("ApplicationId is : " + result);
 
-                    var result = response.Content.ReadAsStringAsync().Result;
-                    Console.WriteLine("****************");
-                    Console.WriteLine("ApplicationId is : " + result);
+                        await SendConfirmation(application, body);
+                    }
+                    else
+                    {
+                        await SendError(body);
+                    }
 
-                    await SendConfirmation(application, body);
+
+
+
 
                 }
                 catch (Exception e)
@@ -71,14 +79,46 @@ namespace bpp.Helpers
 
         }
 
+        private static async Task SendError(ConfirmBody body)
+        {
+            var onConfirmBody = JsonConvert.DeserializeObject<OnConfirmBody>(File.ReadAllText("StaticFiles/OnConfirmBody.json"));
+            onConfirmBody.Context.MessageId = body.Context.MessageId;
+            onConfirmBody.Context.TransactionId = body.Context.TransactionId;
+            onConfirmBody.Context.Timestamp = DateTime.Now;
+            onConfirmBody.Context.BapId = body.Context.BapId;
+            onConfirmBody.Context.BapUri = body.Context.BapUri;
+            onConfirmBody.Error = new Error() { Code = "500", Message = "Internal server while saving application. Please try again or contact BPP" };
+
+            try
+            {
+                var json = JsonConvert.SerializeObject(onConfirmBody, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+                Console.WriteLine("on_confirm data : " + json);
+                var url = body.Context.BapUri + "on_confirm";
+                using var client = new HttpClient();
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Signature", AuthUtil.createAuthorizationHeader(json));
+                var response = await client.PostAsync(url, data);
+
+                var result = await response.Content.ReadAsStringAsync();
+                Console.WriteLine("result for on_confirm  : " + result);
+
+            }
+            catch (HttpRequestException e)
+            {
+                Console.WriteLine("Error while sending On_confirm message! : " + e.Message);
+                Console.WriteLine("Message :{0} ", e.StackTrace);
+            }
+        }
+
         private static async Task SendConfirmation(Application application, ConfirmBody body)
         {
 
             var onConfirmBody = JsonConvert.DeserializeObject<OnConfirmBody>(File.ReadAllText("StaticFiles/OnConfirmBody.json"));
             onConfirmBody.Context.MessageId = body.Context.MessageId;
             onConfirmBody.Context.TransactionId = body.Context.TransactionId;
-            onConfirmBody.Context.Timestamp = new DateTime();
-
+            onConfirmBody.Context.Timestamp = DateTime.Now;
+            onConfirmBody.Context.BapId = body.Context.BapId;
+            onConfirmBody.Context.BapUri = body.Context.BapUri;
             onConfirmBody.Message.Order.Id = application.id;
             onConfirmBody.Message.Order.Items.Add(new Item() { Id = application.jobid });
 
@@ -86,20 +126,20 @@ namespace bpp.Helpers
             {
                 var json = JsonConvert.SerializeObject(onConfirmBody, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
-
+                Console.WriteLine("on_confirm data : " + json);
                 var url = body.Context.BapUri + "on_confirm";
                 using var client = new HttpClient();
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("authorization", AuthUtil.createAuthorizationHeader(json));
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Signature", AuthUtil.createAuthorizationHeader(json));
                 var response = await client.PostAsync(url, data);
 
                 var result = await response.Content.ReadAsStringAsync();
-                Console.WriteLine("result for on_confirm :" + result);
+                Console.WriteLine("result for on_confirm : " + result);
 
             }
             catch (HttpRequestException e)
             {
-                Console.WriteLine("\nException Caught!");
-                Console.WriteLine("Message :{0} ", e.Message);
+                Console.WriteLine("Error while sending On_confirm message! : " + e.Message);
+                Console.WriteLine("Message :{0} ", e.StackTrace);
             }
 
         }
@@ -109,7 +149,7 @@ namespace bpp.Helpers
             var url = Environment.GetEnvironmentVariable("searchbaseUrl")?.ToString();
             url = url + "/getbyid/" + application.jobid;
 
-            Console.WriteLine(" internal job search at : " + url);
+            Console.WriteLine(" internal job search for job ID  : " + application.jobid);
 
             using var client = new HttpClient();
             var response = client.GetAsync(url).Result;
@@ -118,6 +158,8 @@ namespace bpp.Helpers
             var selectedjob = Newtonsoft.Json.JsonConvert.DeserializeObject<Job>(jobs);
             application.jobTitle = selectedjob.title;
         }
+
+
     }
 }
 

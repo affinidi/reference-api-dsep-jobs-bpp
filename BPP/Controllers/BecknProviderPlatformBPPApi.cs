@@ -27,12 +27,14 @@ namespace bpp.Controllers
         private SearchHandler _searchHandler;
         private SelectHandler _selectHandler;
         private ConfirmHandler _confirmHandler;
+        private StausHandler _stausHandler;
 
-        public BecknProviderPlatformBPPApiController(SearchHandler searchHandler, SelectHandler selectHandler, ConfirmHandler confirmHandler)
+        public BecknProviderPlatformBPPApiController(SearchHandler searchHandler, SelectHandler selectHandler, ConfirmHandler confirmHandler, StausHandler stausHandler)
         {
             _searchHandler = searchHandler;
             _selectHandler = selectHandler;
             _confirmHandler = confirmHandler;
+            _stausHandler = stausHandler;
         }
 
 
@@ -45,20 +47,19 @@ namespace bpp.Controllers
         [HttpPost]
         [Route("/search")]
         //[Authorize(AuthenticationSchemes = ApiKeyAuthenticationHandler.SchemeName)]
-        [ValidateModelState]
+        //[ValidateModelState]
         // [SignResponse]
         [SwaggerOperation("SearchPost")]
         // [SwaggerResponse(statusCode: 200, type: typeof(InlineResponse200), description: "Acknowledgement of message received")]
-        public virtual async Task<IActionResult> SearchPost([FromBody] SearchBody body)
+        public virtual IActionResult SearchPost([FromBody] SearchBody body)
         {
 
-            await _searchHandler.SearchAndReply(body);
+            Task.Run(() =>
+           {
+               _searchHandler.SearchAndReply(body);
+           }).ConfigureAwait(false);
 
-            string ackJson = "{\n  \"message\" : {\n    \"ack\" : {\n      \"status\" : \"ACK\"\n    }\n  } }";
-
-            var response = ackJson != null
-            ? JsonConvert.DeserializeObject<Ack>(ackJson)
-            : default;
+            var response = new Ack() { Status = Ack.StatusEnum.ACKEnum };
             return new ObjectResult(response);
         }
 
@@ -79,12 +80,8 @@ namespace bpp.Controllers
 
             _selectHandler.SelectAndReply(body);
 
-            string exampleJson = "{\n  \"message\" : {\n    \"ack\" : {\n      \"status\" : \"ACK\"\n    }\n  }}";
-
-            var example = exampleJson != null
-            ? JsonConvert.DeserializeObject<Ack>(exampleJson)
-            : default;            //TODO: Change the data returned
-            return new ObjectResult(example);
+            var response = new Ack() { Status = Ack.StatusEnum.ACKEnum };
+            return new ObjectResult(response);
         }
 
         [HttpPost]
@@ -97,12 +94,8 @@ namespace bpp.Controllers
         {
             _ = _confirmHandler.SaveApplication(body);
 
-            string exampleJson = "{\n  \"message\" : {\n    \"ack\" : {\n      \"status\" : \"ACK\"\n    }\n  }\n}";
-
-            var example = exampleJson != null
-            ? JsonConvert.DeserializeObject<Ack>(exampleJson)
-            : default;            //TODO: Change the data returned
-            return new ObjectResult(example);
+            var response = new Ack() { Status = Ack.StatusEnum.ACKEnum };
+            return new ObjectResult(response);
         }
 
         /// <summary>
@@ -135,30 +128,25 @@ namespace bpp.Controllers
 
 
 
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <remarks>Fetch the latest order object</remarks>
-        ///// <param name="body">TODO</param>
-        ///// <response code="200">Acknowledgement of message received</response>
-        //[HttpPost]
-        //[Route("/status")]
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <remarks>Fetch the latest order object</remarks>
+        /// <param name="body">TODO</param>
+        /// <response code="200">Acknowledgement of message received</response>
+        [HttpPost]
+        [Route("/status")]
         //[Authorize(AuthenticationSchemes = ApiKeyAuthenticationHandler.SchemeName)]
         //[ValidateModelState]
-        //[SwaggerOperation("StatusPost")]
+        [SwaggerOperation("StatusPost")]
         //[SwaggerResponse(statusCode: 200, type: typeof(InlineResponse200), description: "Acknowledgement of message received")]
-        //public virtual IActionResult StatusPost([FromBody] StatusBody body)
-        //{
-        //    //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-        //    // return StatusCode(200, default(InlineResponse200));
-        //    string exampleJson = null;
-        //    exampleJson = "{\n  \"message\" : {\n    \"ack\" : {\n      \"status\" : \"ACK\"\n    }\n  },\n  \"error\" : {\n    \"path\" : \"path\",\n    \"code\" : \"code\",\n    \"type\" : \"CONTEXT-ERROR\",\n    \"message\" : \"message\"\n  }\n}";
+        public virtual IActionResult StatusPost([FromBody] StatusBody body)
+        {
+            _stausHandler.SendStatus(body);
 
-        //    var example = exampleJson != null
-        //    ? JsonConvert.DeserializeObject<InlineResponse200>(exampleJson)
-        //    : default(InlineResponse200);            //TODO: Change the data returned
-        //    return new ObjectResult(example);
-        //}
+            var response = new Ack() { Status = Ack.StatusEnum.ACKEnum };
+            return new ObjectResult(response);
+        }
 
 
         /// <summary>

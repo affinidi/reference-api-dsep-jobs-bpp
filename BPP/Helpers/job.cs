@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 namespace search.Models
 {
     [JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-    public enum StateEnum
+    public enum SalaryEnum
     {
         [EnumMember(Value = "baseSalary")]
         baseSalary = 0,
@@ -16,8 +16,8 @@ namespace search.Models
         [EnumMember(Value = "allowance")]
         allowance = 2,
 
-        [EnumMember(Value = "comission")]
-        comission = 3,
+        [EnumMember(Value = "commission")]
+        commission = 3,
 
         [EnumMember(Value = "overtime")]
         overtime = 4
@@ -73,7 +73,7 @@ namespace search.Models
         public int minValue { get; set; }
         public int maxValue { get; set; }
         public string unitText { get; set; }
-        public StateEnum type { get; set; }
+        public SalaryEnum type { get; set; }
     }
 
     public class Job

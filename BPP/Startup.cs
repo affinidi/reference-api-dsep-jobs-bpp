@@ -56,13 +56,15 @@ namespace bpp
                 {
                     opts.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                     opts.SerializerSettings.Converters.Add(new StringEnumConverter(new CamelCaseNamingStrategy()));
-                    
+
                 })
                 .AddXmlSerializerFormatters();
             services.AddSingleton<STDCodeHelper>()
+                .AddSingleton<NetworkParticipantCache>()
                 .AddScoped<ConfirmHandler>()
                 .AddScoped<SelectHandler>()
-                .AddScoped<SearchHandler>();
+                .AddScoped<SearchHandler>()
+                .AddScoped<StausHandler>();
 
             //services.AddAuthentication(ApiKeyAuthenticationHandler.SchemeName)
             //    .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>(ApiKeyAuthenticationHandler.SchemeName, null);
@@ -79,10 +81,10 @@ namespace bpp
                 {
                     c.SwaggerDoc("DSEP-bpp", new OpenApiInfo
                     {
-                        
+
                         Contact = new OpenApiContact()
-                        
-                    
+
+
                     });
                     c.CustomSchemaIds(type => type.FullName);
                     c.IncludeXmlComments($"{AppContext.BaseDirectory}{Path.DirectorySeparatorChar}{_hostingEnv.ApplicationName}.xml");
@@ -101,9 +103,10 @@ namespace bpp
         /// <param name="loggerFactory"></param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
-            app.UseRouting();
 
-           
+            app.UseRouting();
+            app.UseMiddleware<DSEPSigVerification>();
+
             app.UseAuthorization();
 
             app.UseSwagger(c => { c.SerializeAsV2 = true; });
@@ -112,7 +115,7 @@ namespace bpp
                 //TODO: Either use the SwaggerGen generated Swagger contract (generated from C# classes)
                 c.SwaggerEndpoint("/swagger/DSEP-bpp/swagger.json", "");
 
-              
+
             });
 
             //TODO: Use Https Redirection

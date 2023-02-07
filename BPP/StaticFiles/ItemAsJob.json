@@ -1,0 +1,124 @@
+﻿{
+    "id": "1",
+    "descriptor": {
+        "name": "",
+        "long_desc": "",
+        "additional_desc": {
+            "url": "https://g.co/kgs/XRj9sH",
+            "content_type": "text/html"
+        }
+    },
+    "location_ids": [
+
+    ],
+    "tags": [
+        {
+            "descriptor": {
+                "name": "Minimum Educational Qualifications",
+                "list": [
+                    {}
+                ]
+            }
+        },
+        {
+            "descriptor": {
+                "name": "Preferred Educational Qualifications",
+                "list": [
+                    {}
+                ]
+            }
+        },
+        {
+            "descriptor": {
+                "name": "Work Experience",
+                "list": [
+                    {
+                        "descriptor": {
+                            "code": "exp-in-years",
+                            "name": "Minimum Work Experience"
+                        },
+                        "value": ""
+                    },
+                    {
+                        "descriptor": {
+                            "name": "Software Development Experience"
+                        },
+                        "value": ""
+                    },
+                    {
+                        "descriptor": {
+                            "name": "Technical Leadership Experience"
+                        },
+                        "value": ""
+                    },
+                    {
+                        "value": ".."
+                    }
+                ]
+            }
+        },
+        {
+            "descriptor": {
+                "name": "Responsibilities",
+                "list": [
+                    {}
+                ]
+            }
+        },
+        {
+            "descriptor": {
+                "code": "employment-info",
+                "name": "Employment Information",
+                "list": [
+                    {}
+                ]
+            }
+        },
+        {
+            "descriptor": {
+                "code": "salary-info",
+                "name": "Salary Compensation",
+                "list": [
+                    {
+                        "descriptor": {
+                            "name": "Salary Range"
+                        },
+                        "value": ""
+                    },
+                    {
+                        "descriptor": {
+                            "name": "Compensation Unit",
+                            "code": "comp-unit"
+                        },
+                        "value": "",
+                        "display": "none"
+                    },
+                    {
+                        "descriptor": {
+                            "name": "Minimum Compensation",
+                            "code": "min-comp"
+                        },
+                        "value": "",
+                        "display": "none"
+                    },
+                    {
+                        "descriptor": {
+                            "name": "Maximum Compensation",
+                            "code": "max-comp"
+                        },
+                        "value": "",
+                        "display": "none"
+                    },
+                    {
+                        "descriptor": {
+                            "name": "Average Compensation",
+                            "code": "avg-comp"
+                        },
+                        "value": "",
+                        "display": "none"
+                    }
+                ]
+            }
+        }
+    ]
+}

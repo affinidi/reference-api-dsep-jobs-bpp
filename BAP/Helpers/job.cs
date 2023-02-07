@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
-namespace BAP.Models
+namespace BAP.Helpers
 {
     [JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
     public enum StateEnum

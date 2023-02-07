@@ -1,31 +1,58 @@
-﻿<Properties StartupConfiguration="{BD6B4382-C4B0-4154-82C8-BB016DBA3114}|web">
-  <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
-  </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.Workbench ActiveDocument="BPP/Helpers/SelectHandler.cs">
+﻿<Properties StartupConfiguration="{BD6B4382-C4B0-4154-82C8-BB016DBA3114}|Default">
+  <MonoDevelop.Ide.ItemProperties.search PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="BPP/Helpers/StausHandler.cs">
     <Files>
-      <File FileName="BPP/Helpers/ConfirmHandler.cs" />
-      <File FileName="BPP/StaticFiles/OnConfirmBody.json" />
-      <File FileName="BPP/Helpers/SearchHandler.cs" />
-      <File FileName="BPP/Helpers/SelectHandler.cs" Line="154" Column="19" />
+      <File FileName="BPP/Helpers/StausHandler.cs" Line="185" Column="1" />
+      <File FileName="SearchApi/Controllers/OpensearchController.cs" Line="27" Column="40" />
+      <File FileName="SearchApi/OpensearchHandler.cs" Line="62" Column="55" />
+      <File FileName="SearchApi/Models/Credential.cs" />
+      <File FileName="SearchApi/Models/application.cs" Line="13" Column="46" />
+      <File FileName="SearchApi/Startup.cs" Line="30" Column="17" />
+      <File FileName="BPP/Helpers/ConfirmHandler.cs" Line="157" Column="1" />
+      <File FileName="BPP/Helpers/job.cs" Line="19" Column="40" />
+      <File FileName="SearchApi/Models/Job.cs" Line="21" Column="19" />
+      <File FileName="SearchApi/Program.cs" Line="16" Column="1" />
+      <File FileName="BPP/StaticFiles/ItemAsJob.json" Line="72" Column="22" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="DSEP" expanded="True">
-            <Node name="bpp" expanded="True">
+            <Node name="bpp">
+              <Node name="StaticFiles">
+                <Node name="ItemAsJob.json" selected="True" />
+              </Node>
+            </Node>
+            <Node name="search" expanded="True">
               <Node name="Controllers" expanded="True" />
-              <Node name="Helpers" expanded="True" />
-              <Node name="StaticFiles" expanded="True" />
+              <Node name="Models" expanded="True" />
             </Node>
           </Node>
         </State>
       </Pad>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State>
+          <Value>selectedItem</Value>
+        </State>
+      </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
+  <DisabledProjects>
+    <String>BAP/BAP.csproj</String>
+    <String>../../../../Users/sanjaykumar/Projects/Beckn/Beckn/Beckn.csproj</String>
+  </DisabledProjects>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/Volumes/Data-disk/src/DSEP/SearchApi/OpensearchHandler.cs" relfile="SearchApi/OpensearchHandler.cs" line="70" column="1" />
+      <Breakpoint file="/Volumes/Data-disk/src/DSEP/SearchApi/Controllers/OpensearchController.cs" relfile="SearchApi/Controllers/OpensearchController.cs" line="79" column="1" />
+      <Breakpoint file="/Volumes/Data-disk/src/DSEP/SearchApi/OpensearchHandler.cs" relfile="SearchApi/OpensearchHandler.cs" line="69" column="1" />
+      <Breakpoint file="/Volumes/Data-disk/src/DSEP/SearchApi/OpensearchHandler.cs" relfile="SearchApi/OpensearchHandler.cs" line="58" column="1" />
+      <Breakpoint file="/Volumes/Data-disk/src/DSEP/BPP/Helpers/ConfirmHandler.cs" relfile="BPP/Helpers/ConfirmHandler.cs" line="42" column="1" />
+      <Breakpoint file="/Volumes/Data-disk/src/DSEP/BPP/Helpers/ConfirmHandler.cs" relfile="BPP/Helpers/ConfirmHandler.cs" line="157" column="1" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
-  <MonoDevelop.Ide.ItemProperties.BAP PreferredExecutionTarget="/Applications/Google Chrome.app" />
-  <MultiItemStartupConfigurations />
   <MonoDevelop.Ide.ItemProperties.bpp PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MultiItemStartupConfigurations />
 </Properties>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using BAP.Helpers;
 using BAP.Models;
 using BAP.Services;
 using Microsoft.AspNetCore.Cors;
@@ -9,26 +10,26 @@ namespace BAP.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class BAPController: ControllerBase
+    public class BAPController : ControllerBase
     {
-		DataRetrievalService _dataRetrievalService;
+        DataRetrievalService _dataRetrievalService;
         public BAPController(DataRetrievalService dataRetrievalService)
-		{
-			_dataRetrievalService = dataRetrievalService;
-		}
+        {
+            _dataRetrievalService = dataRetrievalService;
+        }
 
         [EnableCors]
         [HttpGet]
-		[Route("retrieve/operation={operation}&transationid={transationid}&messageid={messageid}")]
-		public List<Job> GetBppData(string operation, string transationid, string messageid)
-		{
-			return _dataRetrievalService.GetDataForTransactionID(operation,transationid,messageid);
-		}
+        [Route("retrieve/operation={operation}&transationid={transationid}&messageid={messageid}")]
+        public List<Job> GetBppData(string operation, string transationid, string messageid)
+        {
+            return _dataRetrievalService.GetDataForTransactionID(operation, transationid, messageid);
+        }
 
         [EnableCors]
         [HttpPost]
         [Route("searchdsep")]
-        public string SearchBPP(EUAPayload payload )
+        public string SearchBPP(EUAPayload payload)
         {
             return _dataRetrievalService.SearchOnBPP(payload);
         }
@@ -44,7 +45,7 @@ namespace BAP.Controllers
         [EnableCors]
         [HttpPost]
         [Route("confirmDsep")]
-        public string ConfirmDsep (EUAPayload payload)
+        public string ConfirmDsep(EUAPayload payload)
         {
             return _dataRetrievalService.ConfirmOnDsep(payload);
         }

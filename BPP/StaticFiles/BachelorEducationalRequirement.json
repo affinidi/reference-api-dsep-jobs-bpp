@@ -1,0 +1,13 @@
+﻿[
+    {
+        "descriptor": {
+            "code": "degree",
+            "name": "Degree"
+        },
+        "value": "Bachelors",
+        "display": "none"
+    },
+    {
+        "value": "Bachelors or Equivalent Practical Experience"
+    }
+]

@@ -11,6 +11,7 @@ using System.Security.Policy;
 using System.Text;
 using bpp.Helpers;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OpenSearch.Client;
 using search.Models;
@@ -26,7 +27,8 @@ namespace search
         string _openSearchGetJobUrl;
         string _openSearchPutapplicationIndex;
         string _openSearchGettapplicationUrl;
-        public OpensearchHandler()
+        ILogger _logger;
+        public OpensearchHandler(ILoggerFactory logfactory)
         {
             _opensearchBaseUrl = Environment.GetEnvironmentVariable("opensearchBaseUrl")?.ToString();
             _openSearchPutJobIndex = Environment.GetEnvironmentVariable("openSearchPutIndex")?.ToString();
@@ -46,6 +48,7 @@ namespace search
 
 
             _client = new OpenSearchClient(config);
+            _logger = logfactory.CreateLogger<OpensearchHandler>();
 
 
 
@@ -53,11 +56,20 @@ namespace search
 
         internal Job Find(string id)
         {
-            var searchResponse = _client.Get<Job>(id, idx=>idx.Index("jobs"));
+            _logger.LogInformation("select job request for ID : " + id);
+            var searchResponse = _client.Get<Job>(id, idx => idx.Index("jobs"));
 
             return (Job)(searchResponse.IsValid ? ((Job)searchResponse.Source) : null);
-           
 
+
+        }
+
+        internal Application FindApplication(string id)
+        {
+            _logger.LogInformation("select application for ID : " + id);
+            var searchResponse = _client.Get<Application>(id, idx => idx.Index("applications"));
+
+            return (Application)(searchResponse.IsValid ? ((Application)searchResponse.Source) : null);
         }
 
         internal List<Application> FindApplications()
@@ -68,15 +80,15 @@ namespace search
             {
                 From = 0,
                 Size = 100,
-                Query = new ExistsQuery(){ Field="person.creds"}
+                Query = new ExistsQuery() { Field = "person.creds" }
             };
             var response = _client.Search<Application>(request);
-            if(response.IsValid && response.Documents.Count>0)
+            if (response.IsValid && response.Documents.Count > 0)
             {
                 applications.AddRange(response.Documents);
-                Console.WriteLine("Total Applications in system :" + applications.Count);
+                _logger.LogInformation("Total Applications in system :" + applications.Count);
             }
-            
+
             //applications = applications.GroupBy(x => x.jobid).Select(a => a.First()).ToList();
 
             return applications;
@@ -84,9 +96,9 @@ namespace search
 
         internal IEnumerable<Job> FindManyWProvider(Query query)
         {
-            ISearchResponse<Job> searchResponse= null;
+            ISearchResponse<Job> searchResponse = null;
             List<Job> jobs = new List<Job>();
-            foreach (var item in query.provider?? Enumerable.Empty<ProviderQuery>())
+            foreach (var item in query.provider ?? Enumerable.Empty<ProviderQuery>())
             {
                 var request = new SearchRequest
                 {
@@ -95,12 +107,12 @@ namespace search
                     Query = new MatchQuery { Field = "hiringOrganization.name", Query = item.name } &&
                        new MatchQuery { Field = "jobLocation.address.addressRegion", Query = string.Join(", ", item.locations.Select(x => x)) }
                 };
-                 searchResponse = _client.Search<Job>(request);
-                if (searchResponse.IsValid  && searchResponse.Documents.Count>0)
+                searchResponse = _client.Search<Job>(request);
+                if (searchResponse.IsValid && searchResponse.Documents.Count > 0)
                 {
                     jobs.AddRange((List<Job>)searchResponse.Documents);
                 }
-                    
+
             }
             return jobs;
         }
@@ -162,10 +174,10 @@ namespace search
 
                     Query = new MatchQuery { Field = "title", Query = jobTitle } &&
                                                        new TermsQuery { Field = "skills", Terms = query.skills }
-                            
-                          //new MatchQuery { Field = "description", Query = string.Join(",", query.skills.Select(x => x)) }
+
+                                                       //new MatchQuery { Field = "description", Query = string.Join(",", query.skills.Select(x => x)) }
                 };
-                
+
                 searchResponse = _client.Search<Job>(request);
                 if (searchResponse.IsValid && searchResponse.Documents.Count > 0)
                 {
@@ -179,13 +191,14 @@ namespace search
 
         internal string SaveDoc(Job job)
         {
-
+            _logger.LogInformation("Saving posted job");
             var response = _client.Index(job, i => i.Index("jobs"));
             return response.IsValid ? response.Id : response.ApiCall?.OriginalException?.ToString();
         }
 
         internal object SaveDoc(Application application)
         {
+            _logger.LogInformation("Saving Application : " + application.id);
             var response = _client.Index(application, i => i.Index("applications").Id(application.id));
             return response.IsValid ? response.Id : response.ApiCall?.OriginalException?.ToString();
             //return new Object();

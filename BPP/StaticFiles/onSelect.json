@@ -6,23 +6,37 @@
                 "code": "IND"
             }
         },
-        "action": "on_confirm",
+        "action": "on_select",
         "version": "1.0.0",
         "bap_id": "",
         "bap_uri": "",
-        "bpp_id": "affinidi.com.bpp",
+        "bpp_id": "affinidi.bpp.com",
         "bpp_uri": "http://DSEP-nlb-d3ed9a3f85596080.elb.ap-south-1.amazonaws.com",
         "transaction_id": "",
         "message_id": "",
-        "timestamp": "",
-        "ttl": "P1M"
+        "timestamp": ""
     },
     "message": {
         "order": {
-            "id": "",
+            "provider": {
+                "descriptor": {
+
+                },
+                "locations": [
+
+                ],
+                "fulfillments": [
+
+                ]
+            },
             "items": [
 
-            ]
+            ],
+            "xinput": {
+                "form": {
+                    "url": ""
+                }
+            }
         }
     }
 }

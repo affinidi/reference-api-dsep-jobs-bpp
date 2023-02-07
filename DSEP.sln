@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bpp", "BPP\bpp.csproj", "{B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "search", "SearchApi\search.csproj", "{B13A4A6C-53DA-41A3-91F9-341AC778A84B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Beckn", "..\..\..\..\Users\sanjaykumar\Projects\Beckn\Beckn\Beckn.csproj", "{FFC5D746-F60F-4757-BE4A-63427FBD2455}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{B13A4A6C-53DA-41A3-91F9-341AC778A84B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B13A4A6C-53DA-41A3-91F9-341AC778A84B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B13A4A6C-53DA-41A3-91F9-341AC778A84B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FFC5D746-F60F-4757-BE4A-63427FBD2455}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFC5D746-F60F-4757-BE4A-63427FBD2455}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFC5D746-F60F-4757-BE4A-63427FBD2455}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFC5D746-F60F-4757-BE4A-63427FBD2455}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -20,7 +20,7 @@ namespace bpp.Helpers
     }
     public static class AuthUtil
     {
-       
+
         //to create header 
         public static string createAuthorizationHeader(string message)
         {
@@ -31,7 +31,7 @@ namespace bpp.Helpers
             var subscriber_id = "affinidi.com.bpp";
             var unique_key_id = "Affinidi";
             //creates header data to be sent as Authorization key 
-             string header = "Signature keyId=" + subscriber_id + "|" + unique_key_id + "|" + "ed25519, algorithm = ed25519, created = " + sg.created + ", expires = " + sg.expires + ", headers = (" + sg.created + ") (" + sg.expires + ") digest, signature = " + signature;
+            string header = "keyId=" + subscriber_id + "|" + unique_key_id + "|" + "ed25519, algorithm = ed25519, created = " + sg.created + ", expires = " + sg.expires + ", headers = (" + sg.created + ") (" + sg.expires + ") digest, signature = " + signature;
             //string header =   $"Signature keyId = " ${subscriber_id}"|"${config.unique_key_id}|ed25519", algorithm = "ed25519", created = "${created}", expires = "${expires}", headers = "(created) (expires) digest", signature = "${signature}"";
             return header;
         }
@@ -55,14 +55,14 @@ namespace bpp.Helpers
             var obj = GenericHash.Hash(utf8.GetBytes(message), null, 64);
             var ba64 = Convert.ToBase64String(obj);
 
-            var signing_string = $"(created): ${ created} (expires): ${ expires} digest: BLAKE - 512 =${ba64}";
+            var signing_string = $"(created): ${created} (expires): ${expires} digest: BLAKE - 512 =${ba64}";
             return new SingingString { signing_string = signing_string, expires = expires, created = created };
         }
 
 
         // sign the message 
 
-        public static string  signMessage(string signing_string, string privateKey)
+        public static string signMessage(string signing_string, string privateKey)
         {
 
             var pk = Convert.FromBase64String(privateKey);// sodium.from_base64(privateKey, base64_variants.ORIGINAL); // ed25519 private key

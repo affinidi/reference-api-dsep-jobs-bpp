@@ -1,25 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Policy;
 using System.Text;
+using BAP.Helpers;
 using BAP.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using HiringOrganization = BAP.Models.HiringOrganization;
-using Job = BAP.Models.Job;
-using JobLocation = BAP.Models.JobLocation;
+//using HiringOrganization = BAP.Models.HiringOrganization;
+//using Job = BAP.Models.Job;
+//using JobLocation = BAP.Models.JobLocation;
 
 namespace BAP.Services
 {
-	public class DataRetrievalService
-	{
-		public DataRetrievalService()
-		{
+    public class DataRetrievalService
+    {
+        public DataRetrievalService()
+        {
 
-		}
+        }
 
         internal List<Job> GetDataForTransactionID(string operation, string transationid, string messageid)
         {
@@ -29,31 +31,31 @@ namespace BAP.Services
             HttpResponseMessage response = null;
             try
             {
-             
+
                 var url = Environment.GetEnvironmentVariable("RetrieveUrl")?.ToString();
                 var uri = new Uri(url).AddParameter(
-                    ("transactionid",transationid),
-                    ("messageid",messageid),
-                    ("action",operation)
+                    ("transactionid", transationid),
+                    ("messageid", messageid),
+                    ("action", operation)
                     );
 
                 Console.WriteLine("The retrieve URL is " + uri.AbsoluteUri);
                 client = new HttpClient();
-               
+
                 response = client.GetAsync(uri).Result;
                 response.EnsureSuccessStatusCode();
                 jobs = response.Content.ReadAsStringAsync().Result;
 
-              if(operation=="on_search")
+                if (operation == "on_search")
                 {
                     joblist.AddRange(GetJobsFromBPPMessage(jobs));
                 }
-              else if (operation=="on_select")
+                else if (operation == "on_select")
                 {
                     joblist.Add(GetJobDetails(jobs));
                 }
 
-                
+
             }
             catch (Exception e)
             {
@@ -66,70 +68,74 @@ namespace BAP.Services
             return joblist;
         }
 
-   
+
         internal string SearchOnBPP(EUAPayload payload)
         {
             string messageId = Guid.NewGuid().ToString("n");
             List<Location> pLocations = new List<Location>();
-            foreach(var l in payload?.locations)
+            foreach (var l in payload?.locations)
             {
-                pLocations.Add(new Location { City  = new City { Name = l } });
+                pLocations.Add(new Location { City = new City { Name = l } });
             }
             TagGroup tagGroup = new TagGroup() { Code = "func_skilss", _List = new List<Tag>() };
 
-            if (payload.skills?.Count>0)
+            if (payload.skills?.Count > 0)
             {
-               
-                foreach(var s in payload.skills)
+
+                foreach (var s in payload.skills)
                 {
                     tagGroup._List.Add(new Tag { Code = s });
                 }
             }
-          
+
             var searchBody = JsonConvert.DeserializeObject<SearchBody>(File.ReadAllText("StaticFiles/SearchContext.json"));
             searchBody.Context.MessageId = messageId;
             searchBody.Context.TransactionId = payload.transactionId;
             searchBody.Context.Timestamp = new DateTime();
-            searchBody.Message.Intent.Provider = string.IsNullOrEmpty(payload.provider)? searchBody.Message.Intent.Provider: new Provider() { Descriptor = new Descriptor { Name = payload.provider }
-            , Locations= new List<Location>()};
-            searchBody.Message.Intent.Item = string.IsNullOrEmpty(payload.title)? searchBody.Message.Intent.Item: new Item { Descriptor = new Descriptor { Name = payload.title }, Tags= new List<TagGroup> { tagGroup} };
-           
-            if (searchBody.Message.Intent.Provider !=null)
+            searchBody.Message.Intent.Provider = string.IsNullOrEmpty(payload.provider) ? searchBody.Message.Intent.Provider : new Provider()
             {
-                
+                Descriptor = new Descriptor { Name = payload.provider }
+            ,
+                Locations = new List<Location>()
+            };
+            searchBody.Message.Intent.Item = string.IsNullOrEmpty(payload.title) ? searchBody.Message.Intent.Item : new Item { Descriptor = new Descriptor { Name = payload.title }, Tags = new List<TagGroup> { tagGroup } };
+
+            if (searchBody.Message.Intent.Provider != null)
+            {
+
                 searchBody.Message.Intent.Provider.Locations.AddRange(pLocations);
-               
+
             }
-           
+
             HttpResponseMessage response = null;
             var json = JsonConvert.SerializeObject(searchBody, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-         
+
             var data = new StringContent(json, Encoding.UTF8, "application/json");
             var url = Environment.GetEnvironmentVariable("BGUrl")?.ToString();
             var client = new HttpClient();
 
 
-            response = client.PostAsync(url+"/search",data).Result;
+            response = client.PostAsync(url + "/search", data).Result;
             response.EnsureSuccessStatusCode();
-            var result  = response.Content.ReadAsStringAsync().Result;
+            var result = response.Content.ReadAsStringAsync().Result;
 
 
             var ack = JsonConvert.DeserializeObject<Ack>(result);
 
 
             return messageId;
-    }
+        }
 
         internal string SelectOnBPP(EUAPayload payload)
         {
             string messageId = Guid.NewGuid().ToString("n");
-          
+
             var selectBody = JsonConvert.DeserializeObject<SelectBody>(File.ReadAllText("StaticFiles/selectBody.json"));
             selectBody.Context.MessageId = messageId;
             selectBody.Context.TransactionId = payload.transactionId;
             selectBody.Context.Timestamp = new DateTime();
             selectBody.Message.Order.item = new Item { Id = payload.jobid };
-            
+
             HttpResponseMessage response = null;
             var json = JsonConvert.SerializeObject(selectBody, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
             var data = new StringContent(json, Encoding.UTF8, "application/json");
@@ -158,7 +164,7 @@ namespace BAP.Services
                 var searchResult = JsonObject["Item"]["result"]["message"]["catalog"];
                 var catalogs = JsonConvert.DeserializeObject<Catalog>(searchResult.ToString());
 
-             
+
                 foreach (var p in catalogs.Providers)
                 {
                     foreach (var i in p.Items)
@@ -171,18 +177,47 @@ namespace BAP.Services
                               hiringOrganization = new HiringOrganization { name = p.Descriptor.Name },
                               description = i.Descriptor.ShortDesc,
                               jobLocation = new JobLocation { name = string.Join(",", p.Locations.Where(x => i.LocationIds.Contains(x.Id)).Select(x => x.City.Name).ToList()) },
-                              baseSalary = new BaseSalary { currency = i.Price?.Currency, value = new Value { maxValue = Convert.ToInt32(i.Price.MaximumValue), minValue = Convert.ToInt32(i.Price.MinimumValue) } },
-                              employmentType= p.Categories.Where(x=>i.CategoryIds.Contains(x.Id)).Select(y=>string.Join("",y.Descriptor.Code.Split("_")).ToLowerInvariant()).ToList(),
-                              datePosted= i.Time.Range.Start.ToString(),
-                              validThrough= Convert.ToDateTime(i.Time.Range.End)
+                              //salary = new Salary { currency = i.Price?.Currency, value = new Value { maxValue = Convert.ToInt32(i.Price.MaximumValue), minValue = Convert.ToInt32(i.Price.MinimumValue) } },
+                              salary = new Salary { currency = i.Price?.Currency, pay = new List<Pay>() },
+
+                              employmentType = p.Categories.Where(x => i.CategoryIds.Contains(x.Id)).Select(y => string.Join("", y.Descriptor.Code.Split("_")).ToLowerInvariant()).ToList(),
+                              datePosted = i.Time.Range.Start.ToString(),
+                              validThrough = Convert.ToDateTime(i.Time.Range.End)
                           }
+
                       );
+                        foreach (var salaryType in i.Tags.Where(x => x.Code == "compensation_type").FirstOrDefault()._List)
+                        {
+                            var job = BAPJobs.Where(x => x.id == i.Id).FirstOrDefault();
+                            switch (salaryType.)
+                            {
+                                case StateEnum.baseSalary:
+                                    salary.Tags.First()._List.Add(new Tag() { Descriptor = new Descriptor() { Name = "Fixed_pay", Code = Convert.ToString(paytype.maxValue) } });
+                                    break;
+
+                                case StateEnum.allowance:
+                                    salary.Tags.First()._List.Add(new Tag() { Descriptor = new Descriptor() { Name = "allowance", Code = Convert.ToString(paytype.maxValue) } });
+                                    break;
+
+                                case StateEnum.comission:
+                                    salary.Tags.First()._List.Add(new Tag() { Descriptor = new Descriptor() { Name = "comission", Code = Convert.ToString(paytype.maxValue) } });
+                                    break;
+
+                                case StateEnum.variableSalary:
+                                    salary.Tags.First()._List.Add(new Tag() { Descriptor = new Descriptor() { Name = "variableSalary", Code = Convert.ToString(paytype.maxValue) } });
+                                    break;
+                                case StateEnum.overtime:
+                                    salary.Tags.First()._List.Add(new Tag() { Descriptor = new Descriptor() { Name = "overtime", Code = Convert.ToString(paytype.maxValue) } });
+                                    break;
+                            }
+
+                        }
 
                     }
 
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
                 Console.WriteLine(e.StackTrace);
@@ -199,7 +234,7 @@ namespace BAP.Services
 
             var BAPJobs = new Job();
             var resultJOb = selectOrder.Provider.Items.First();
-            
+
 
             BAPJobs.id = resultJOb.Id;
             BAPJobs.title = resultJOb.Descriptor.Name;
@@ -236,7 +271,7 @@ namespace BAP.Services
 
             }
 
-            confirmBody.Message.Order.Fulfillment.Customer.Person.Creds = confirmBody.Message.Order.Fulfillment.Customer.Person.Creds.Where(x=> !string.IsNullOrEmpty(x.Id)).ToList();
+            confirmBody.Message.Order.Fulfillment.Customer.Person.Creds = confirmBody.Message.Order.Fulfillment.Customer.Person.Creds.Where(x => !string.IsNullOrEmpty(x.Id)).ToList();
 
             HttpResponseMessage response = null;
             var json = JsonConvert.SerializeObject(confirmBody, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });

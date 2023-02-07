@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Beckn.Models;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using search.Models;
 
@@ -15,9 +17,13 @@ namespace bpp.Helpers
     public class SearchHandler
     {
         STDCodeHelper _STDCodeHelper;
-        public SearchHandler(STDCodeHelper sTDCodeHelper)
+        NetworkParticipantCache _networkParticipantCache;
+        ILogger _logger;
+        public SearchHandler(STDCodeHelper sTDCodeHelper, NetworkParticipantCache networkParticipantCache, ILoggerFactory logfactory)
         {
             _STDCodeHelper = sTDCodeHelper;
+            _networkParticipantCache = networkParticipantCache;
+            _logger = logfactory.CreateLogger<SearchHandler>();
         }
 
         public async Task SearchAndReply(SearchBody query)
@@ -25,7 +31,7 @@ namespace bpp.Helpers
 
             // await Task.Run(() => {
 
-            Console.WriteLine("performing search on search query ");
+            _logger.LogInformation("performing search on search query ");
 
             OnSearchBody on_searchData = searchBppDB(query);
 
@@ -37,7 +43,7 @@ namespace bpp.Helpers
 
         private static async Task Reply(SearchBody query, OnSearchBody on_searchData)
         {
-            if (on_searchData.Message.Catalog.Offers.Count > 0 || on_searchData.Message.Catalog.Providers.Count > 0 || on_searchData.Message.Catalog.Fulfillments.Count > 0)
+            if (on_searchData.Message.Catalog.Providers.Count > 0)
             {
                 try
                 {
@@ -46,7 +52,7 @@ namespace bpp.Helpers
 
                     var url = query.Context.BapUri + "on_search";
                     using var client = new HttpClient();
-                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("authorization", AuthUtil.createAuthorizationHeader(json));
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Signature", AuthUtil.createAuthorizationHeader(json));
                     var response = await client.PostAsync(url, data);
 
                     var result = await response.Content.ReadAsStringAsync();
@@ -67,8 +73,7 @@ namespace bpp.Helpers
 
         private OnSearchBody searchBppDB(SearchBody query)
         {
-            var result = new OnSearchBody();
-            SetContext(query, result);
+            OnSearchBody result = null; ;
             try
             {
                 List<Query> allQueries = new List<Query>();
@@ -94,11 +99,19 @@ namespace bpp.Helpers
                 {
                     jobs.AddRange(ActualSearch(q));
                 }
+                if (jobs.Count > 0)
+                {
 
-                jobs = jobs.GroupBy(x => x.id).Select(j => j.First()).ToList();
+                    jobs = jobs.GroupBy(x => x.id).Select(j => j.First()).ToList();
+                    Console.WriteLine("Responding to BAP with jobs. Total Jobs found for current query {0} is {1}", query.Context.TransactionId, jobs.Count);
+                    result = JsonConvert.DeserializeObject<OnSearchBody>(File.ReadAllText("StaticFiles/OnSearch.json"));
+                    SetContext(query, result);
+                    CreateSearchResult(result, jobs);
+                }
                 //search end
 
-                CreateSearchResult(result, jobs);
+
+
             }
             catch (Exception e)
             {
@@ -130,6 +143,7 @@ namespace bpp.Helpers
                     response.EnsureSuccessStatusCode();
                     jobs = response.Content.ReadAsStringAsync().Result;
                     joblist.AddRange(Newtonsoft.Json.JsonConvert.DeserializeObject<List<Job>>(jobs));
+                    Console.WriteLine("Total Jobs in result : " + joblist.Count);
                 }
                 catch (Exception e)
                 {
@@ -145,17 +159,13 @@ namespace bpp.Helpers
             static void SetContext(SearchBody query, OnSearchBody result)
             {
                 //var tags = new Tags() { { "", "" } };
-                result.Context = query?.Context;
-                result.Message = new OnSearchMessage();
-                result.Message.Catalog = new Catalog();
-                result.Message.Catalog.Offers = new List<Offer>();
+                result.Context.BapId = query?.Context.BapId;
+                result.Context.BapUri = query?.Context.BapUri;
+                result.Context.MessageId = query.Context.MessageId;
+                result.Context.TransactionId = query.Context.TransactionId;
+                result.Context.Timestamp = DateTime.Now;
+
                 result.Message.Catalog.Providers = new List<Provider>();
-                result.Message.Catalog.Fulfillments = new List<Fulfillment>();
-                result.Context.Action = ActionEnum.OnSearchEnum.ToString();
-                result.Context.BppId = "affinidi.bpp";
-                result.Context.BppUri = "http://DSEP-nlb-d3ed9a3f85596080.elb.ap-south-1.amazonaws.com";
-                //result.Context.MessageId = Guid.NewGuid().ToString("n");
-                result.Message.Catalog.Descriptor = new Descriptor() { Name = "Affindi BPP" };
             }
 
             //void FindProviderRelatedSearchItems(SearchBody query, Query searchQuery)
@@ -190,113 +200,68 @@ namespace bpp.Helpers
             static void CreateSearchResult(OnSearchBody result, List<Job> jobs)
             {
                 int locid = 0;
-                int fulid = 0;
-                int catid = 0;
-                int payid = 0;
-                result.Message.Catalog.Offers = new List<Offer>() { new Offer() { Id = DateTimeOffset.Now.ToUnixTimeSeconds().ToString() } };
+                int providerId = 0;
+
+
                 result.Message.Catalog.Payments = new List<Payment>();
 
-
-                foreach (var job in jobs)
+                try
                 {
-                    // string locationid = Guid.NewGuid().ToString();
-                    var categories = new List<Category>();
-
-                    foreach (var jt in job.employmentType)
+                    foreach (var job in jobs)
                     {
-                        categories.Add(new Category
+                        var item = new Item()
                         {
-                            Id = Convert.ToString(++catid),
-                            Descriptor = new Descriptor { Code = jt }
-                        });
-                    }
-
-                    var item = new Item()
-                    {
-                        Id = job.id,
-                        Descriptor = new Descriptor() { Name = job.title },
-
-                        LocationIds = new List<string> { Convert.ToString(++locid) },
-                        FulfillmentIds = new List<string> { Convert.ToString(++fulid) },
-                        PaymentIds = new List<string> { Convert.ToString(++payid) },
-
-                        CategoryIds = categories.Select(x => x.Id).ToList(),
-                        Time = new Time { Range = new TimeRange { End = Convert.ToDateTime(job.validThrough), Start = Convert.ToDateTime(job.datePosted) } }
+                            Id = job.id,
+                            Descriptor = new Descriptor() { Name = job.title, LongDesc = job.description },
+                            LocationIds = new List<string> { Convert.ToString(++locid) },
+                            //Time = new Time { Range = new TimeRange { End = Convert.ToDateTime(job.validThrough), Start = Convert.ToDateTime(job.datePosted) } }
 
 
-                    };
-                    //  offer.ItemIds.Add(item.Id);
-                    var provider = result.Message.Catalog.Providers.Count == 0 ?
-                        result.Message.Catalog.Providers :
-                        result.Message.Catalog.Providers.Where(x => x.Descriptor.Name.Contains(job.hiringOrganization.name));
-
-                    if (provider?.Count() > 0)
-                    {
-                        var pr = provider.First();
-                        pr.Items.Add(item);
-                        pr.Categories.AddRange(categories);
-                        pr.Locations.Add(new Location() { Id = Convert.ToString(locid), City = new City() { Name = job.jobLocation?.address?.addressRegion } });
-                        result.Message.Catalog.Providers.Add(pr);
-                    }
-                    else
-                    {
-                        var pr = new Provider()
-                        {
-                            // Id = Guid.NewGuid().ToString("n"),
-                            Descriptor = new Descriptor() { Name = job.hiringOrganization.name },
-                            Items = new List<Item>() { item },
-                            Categories = categories,
-                            Locations = new List<Location>() { new Location() { Id = Convert.ToString(locid), City = new City() { Name = job.jobLocation?.address?.addressRegion } } }
                         };
-                        result.Message.Catalog.Providers.Add(pr);
-                    }
 
-                    var fullfillment = new Fulfillment() { Id = Convert.ToString(fulid) };
-                    //fullfillment.Type = job.jobLocationType;
-                    //fullfillment.Start = new FulfillmentStart() { Time = new Time() { Timestamp = Convert.ToDateTime(job.datePosted) } };
-                    ///fullfillment.Start.Location = new Location() { Id = item.LocationIds?.First, City = new City() { Name = job.jobLocation.address.addressRegion } };
-                    result.Message.Catalog.Fulfillments.Add(fullfillment);
-                    result.Message.Catalog.Offers.First().ItemIds.Add(item.Id);
+                        var provider = result.Message.Catalog.Providers.Count == 0 ?
+                            result.Message.Catalog.Providers :
+                            result.Message.Catalog.Providers.Where(x => x.Descriptor.Name.Contains(job.hiringOrganization.name));
 
-                    var salary = new Payment()
-                    {
-                        Id = Convert.ToString(payid),
-                        _Params = new PaymentParams() { Currency = job.salary.currency },
-                        Time = new Time() { Schedule = new Schedule() { Frequency = job.salary.pay.Where(x => x.type == StateEnum.baseSalary).Select(x => x.unitText).FirstOrDefault() } },
-                        Tags = new List<TagGroup>() { new TagGroup() { Descriptor = new Descriptor() { Name = "compensation_type" }, _List = new List<Tag>() } }
-
-
-                    };
-
-                    foreach (var paytype in job.salary.pay)
-                    {
-                        switch (paytype.type)
+                        if (provider?.Count() > 0)
                         {
-                            case StateEnum.baseSalary:
-                                salary.Tags.First()._List.Add(new Tag() { Descriptor = new Descriptor() { Name = "Fixed_pay", Code = Convert.ToString(paytype.maxValue) } });
-                                break;
-
-                            case StateEnum.allowance:
-                                salary.Tags.First()._List.Add(new Tag() { Descriptor = new Descriptor() { Name = "allowance", Code = Convert.ToString(paytype.maxValue) } });
-                                break;
-
-                            case StateEnum.comission:
-                                salary.Tags.First()._List.Add(new Tag() { Descriptor = new Descriptor() { Name = "comission", Code = Convert.ToString(paytype.maxValue) } });
-                                break;
-
-                            case StateEnum.variableSalary:
-                                salary.Tags.First()._List.Add(new Tag() { Descriptor = new Descriptor() { Name = "variableSalary", Code = Convert.ToString(paytype.maxValue) } });
-                                break;
-                            case StateEnum.overtime:
-                                salary.Tags.First()._List.Add(new Tag() { Descriptor = new Descriptor() { Name = "overtime", Code = Convert.ToString(paytype.maxValue) } });
-                                break;
+                            var pr = provider.First();
+                            pr.Items.Add(item);
+                            pr.Locations.Add(new Location()
+                            {
+                                Id = Convert.ToString(locid),
+                                City = new City() { Name = job.jobLocation?.address?.addressRegion },
+                                State = new State() { Name = "" },
+                                Country = new Country() { Name = "" }
+                            });
+                            result.Message.Catalog.Providers.Add(pr);
                         }
+                        else
+                        {
+                            var pr = new Provider()
+                            {
+                                Id = Convert.ToString(++providerId),
+                                Descriptor = new Descriptor() { Name = job.hiringOrganization.name },
+                                Items = new List<Item>() { item },
+                                Locations = new List<Location>(){new Location()
+                                {
+                                    Id = Convert.ToString(locid),
+                                    City = new City() { Name = job.jobLocation?.address?.addressRegion },
+                                    State = new State() { Name = "" },
+                                    Country = new Country() { Name = "" }
+                                }
+                                }
+                            };
+                            result.Message.Catalog.Providers.Add(pr);
+                        }
+
+
                     }
-
-                    result.Message.Catalog.Payments.Add(salary);
-
-
-
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine(e.StackTrace);
                 }
             }
         }
