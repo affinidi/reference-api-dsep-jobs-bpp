@@ -3,7 +3,8 @@
         "domain": "dsep:jobs",
         "location": {
             "country": {
-                "code": "IND"
+                "code": "IND",
+                "name": "India"
             }
         },
         "action": "on_confirm",

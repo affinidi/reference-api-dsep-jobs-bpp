@@ -43,37 +43,35 @@ namespace bpp.Helpers
 
         private static async Task Reply(SearchBody query, OnSearchBody on_searchData)
         {
-            if (on_searchData.Message.Catalog.Providers.Count > 0)
+
+            try
             {
-                try
-                {
-                    var json = JsonConvert.SerializeObject(on_searchData, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                var json = JsonConvert.SerializeObject(on_searchData, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
 
-                    var url = query.Context.BapUri + "on_search";
-                    using var client = new HttpClient();
-                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Signature", AuthUtil.createAuthorizationHeader(json));
-                    var response = await client.PostAsync(url, data);
+                var url = query.Context.BapUri + "on_search";
 
-                    var result = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine(result);
+                Console.WriteLine("Rsponding to onsearch API at URL : " + url);
+                using var client = new HttpClient();
+                client.Timeout = new TimeSpan(0, 0, 10);
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Signature", AuthUtil.createAuthorizationHeader(json));
+                var response = await client.PostAsync(url, data);
 
-                }
-                catch (HttpRequestException e)
-                {
-                    Console.WriteLine("\nException Caught!");
-                    Console.WriteLine("Message :{0} ", e.Message);
-                }
+                var result = await response.Content.ReadAsStringAsync();
+                Console.WriteLine("response from BAP API for on_search : " + result);
+
             }
-            else
+            catch (HttpRequestException e)
             {
-                Console.WriteLine("No job found for given query TID : " + query.Context.TransactionId);
+                Console.WriteLine("\nException Caught!");
+                Console.WriteLine("Message :{0} ", e.Message);
             }
+
         }
 
         private OnSearchBody searchBppDB(SearchBody query)
         {
-            OnSearchBody result = null; ;
+            OnSearchBody result = JsonConvert.DeserializeObject<OnSearchBody>(File.ReadAllText("StaticFiles/OnSearch.json"));
             try
             {
                 List<Query> allQueries = new List<Query>();
@@ -90,8 +88,6 @@ namespace bpp.Helpers
 
                 }
 
-
-
                 //actual search
                 List<Job> jobs = new List<Job>();
 
@@ -104,11 +100,15 @@ namespace bpp.Helpers
 
                     jobs = jobs.GroupBy(x => x.id).Select(j => j.First()).ToList();
                     Console.WriteLine("Responding to BAP with jobs. Total Jobs found for current query {0} is {1}", query.Context.TransactionId, jobs.Count);
-                    result = JsonConvert.DeserializeObject<OnSearchBody>(File.ReadAllText("StaticFiles/OnSearch.json"));
+
                     SetContext(query, result);
                     CreateSearchResult(result, jobs);
                 }
                 //search end
+                else
+                {
+                    result.Error = new Error() { Message = "No Job found for current query: TID : " + query.Context.TransactionId };
+                }
 
 
 
@@ -143,7 +143,7 @@ namespace bpp.Helpers
                     response.EnsureSuccessStatusCode();
                     jobs = response.Content.ReadAsStringAsync().Result;
                     joblist.AddRange(Newtonsoft.Json.JsonConvert.DeserializeObject<List<Job>>(jobs));
-                    Console.WriteLine("Total Jobs in result : " + joblist.Count);
+                    Console.WriteLine("Total Jobs for current search query is {0}: ", joblist.Count);
                 }
                 catch (Exception e)
                 {

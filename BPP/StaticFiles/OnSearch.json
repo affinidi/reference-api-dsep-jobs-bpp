@@ -3,7 +3,8 @@
         "domain": "dsep:jobs",
         "location": {
             "country": {
-                "code": "IND"
+                "code": "IND",
+                "name": "India"
             }
         },
         "action": "on_search",
@@ -14,7 +15,8 @@
         "bpp_uri": "http://DSEP-nlb-d3ed9a3f85596080.elb.ap-south-1.amazonaws.com",
         "transaction_id": "",
         "message_id": "",
-        "timestamp": ""
+        "timestamp": "",
+        "ttl": "P1M"
     },
     "message": {
         "catalog": {
