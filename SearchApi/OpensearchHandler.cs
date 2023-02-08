@@ -192,7 +192,7 @@ namespace search
         internal string SaveDoc(Job job)
         {
             _logger.LogInformation("Saving posted job");
-            var response = _client.Index(job, i => i.Index("jobs"));
+            var response = _client.Index(job, i => i.Index("jobs").Id(job.id));
             return response.IsValid ? response.Id : response.ApiCall?.OriginalException?.ToString();
         }
 
@@ -203,6 +203,14 @@ namespace search
             return response.IsValid ? response.Id : response.ApiCall?.OriginalException?.ToString();
             //return new Object();
         }
+
+        //internal object SaveDoc(Job job)
+        //{
+        //    _logger.LogInformation("Saving Job : " + job.id);
+        //    var response = _client.Index(job, i => i.Index("jobs").Id(job.id));
+        //    return response.IsValid ? response.Id : response.ApiCall?.OriginalException?.ToString();
+        //    //return new Object();
+        //}
     }
 }
 

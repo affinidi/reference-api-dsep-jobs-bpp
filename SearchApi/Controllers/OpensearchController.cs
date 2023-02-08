@@ -45,14 +45,13 @@ namespace search.Controllers
         public IActionResult Post(Job job)
         {
             // var jobId = System.Guid.NewGuid().ToString();
-            var json = JsonConvert.SerializeObject(job);
+            //var json = JsonConvert.SerializeObject(job);
 
-            var jobid = CreateMD5(json);
-            job.id = jobid;
+
+            job.id = CreateMD5(JsonConvert.SerializeObject(job));
             var result = _opensearchHandler.SaveDoc(job);
             return Ok(result);
         }
-
 
         private static string CreateMD5(string input)
         {

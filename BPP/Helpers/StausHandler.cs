@@ -7,6 +7,8 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using Beckn.Models;
+using bpp.Models;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using search.Models;
 using static System.Net.Mime.MediaTypeNames;
@@ -65,6 +67,8 @@ namespace bpp.Helpers
             onStatusBody.Context.Timestamp = DateTime.Now;
             onStatusBody.Context.BapId = _statusBody.Context.BapId;
             onStatusBody.Context.BapUri = _statusBody.Context.BapUri;
+            onStatusBody.Context.BppId = Environment.GetEnvironmentVariable("bpp_subscriber_id");
+            onStatusBody.Context.BppUri = Environment.GetEnvironmentVariable("bpp_url");
             onStatusBody.Message.Order.Id = applicationDetails.id;
             onStatusBody.Message.Order.Items.Add(GetJobDetails(applicationDetails.jobid));
             onStatusBody.Message.Order.Fulfillments.Add(GetFulfillment(applicationDetails));

@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Beckn.Models;
+using bpp.Models;
 using Newtonsoft.Json;
 using search.Models;
 
@@ -39,7 +42,7 @@ namespace bpp.Helpers
                 try
                 {
 
-                    SetJobTitle(application);
+                    var jobDetails = SetJobTitle(application);
 
                     var json = JsonConvert.SerializeObject(application, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
@@ -55,7 +58,7 @@ namespace bpp.Helpers
                         var result = response.Content.ReadAsStringAsync().Result;
                         Console.WriteLine("ApplicationId is : " + result);
 
-                        await SendConfirmation(application, body);
+                        await SendConfirmation(application, body, jobDetails);
                     }
                     else
                     {
@@ -69,7 +72,7 @@ namespace bpp.Helpers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Search Error");
+                    Console.WriteLine("Error While saving application");
                     Console.WriteLine(e.Message);
                     Console.WriteLine(response?.Content.ReadAsStringAsync().Result);
 
@@ -110,8 +113,10 @@ namespace bpp.Helpers
             }
         }
 
-        private static async Task SendConfirmation(Application application, ConfirmBody body)
+        private static async Task SendConfirmation(Application application, ConfirmBody body, Job jobDetails)
         {
+            int locid = 0;
+            int fulid = 0;
 
             var onConfirmBody = JsonConvert.DeserializeObject<OnConfirmBody>(File.ReadAllText("StaticFiles/OnConfirmBody.json"));
             onConfirmBody.Context.MessageId = body.Context.MessageId;
@@ -119,8 +124,57 @@ namespace bpp.Helpers
             onConfirmBody.Context.Timestamp = DateTime.Now;
             onConfirmBody.Context.BapId = body.Context.BapId;
             onConfirmBody.Context.BapUri = body.Context.BapUri;
+            onConfirmBody.Context.BppId = Environment.GetEnvironmentVariable("bpp_subscriber_id");
+            onConfirmBody.Context.BppUri = Environment.GetEnvironmentVariable("bpp_url");
             onConfirmBody.Message.Order.Id = application.id;
-            onConfirmBody.Message.Order.Items.Add(new Item() { Id = application.jobid });
+            onConfirmBody.Message.Order.Items.Add(MapJobtoItem(jobDetails));
+            var selectedItem = onConfirmBody.Message.Order.Items.First();
+            selectedItem.Time = new Time
+            {
+                Range = new TimeRange
+                {
+                    End = Convert.ToDateTime(jobDetails.validThrough),
+                    Start = Convert.ToDateTime(jobDetails.datePosted)
+                }
+            };
+
+            onConfirmBody.Message.Order.Provider.Descriptor = new Descriptor() { Name = jobDetails.hiringOrganization.name };
+
+            onConfirmBody.Message.Order.Provider.Locations.Add(new Location() { Id = Convert.ToString(++locid), City = new City() { Name = jobDetails.jobLocation.address.addressRegion } });
+            selectedItem.LocationIds = new List<string>() { Convert.ToString(locid) };
+            if (jobDetails.jobLocationType?.Count > 0)
+            {
+                selectedItem.FulfillmentIds = new List<string>();
+                foreach (var j in jobDetails.jobLocationType)
+                {
+                    onConfirmBody.Message.Order.Provider.Fulfillments.Add(new Fulfillment()
+                    {
+                        Id = Convert.ToString(++fulid),
+                        Type = j
+                    });
+                    selectedItem.FulfillmentIds.Add(Convert.ToString(fulid));
+                }
+            }
+
+            onConfirmBody.Message.Order.Fulfillments = new List<Fulfillment>()
+            {
+                new Fulfillment()
+                {
+                    Id="1",
+                    Customer= new Customer(){Person= application.person },
+                    State = new FulfillmentState()
+                    {
+                        Descriptor = new Descriptor()
+                        {
+                            Name = application.state.ToString(),
+                            Code = application.state.ToString()
+                        }
+                    }
+            }
+
+            };
+
+            onConfirmBody.Message.Order.Xinput = body.Message.Order.Xinput;
 
             try
             {
@@ -144,7 +198,7 @@ namespace bpp.Helpers
 
         }
 
-        private static void SetJobTitle(Application application)
+        private static Job SetJobTitle(Application application)
         {
             var url = Environment.GetEnvironmentVariable("searchbaseUrl")?.ToString();
             url = url + "/getbyid/" + application.jobid;
@@ -157,9 +211,95 @@ namespace bpp.Helpers
             var jobs = response.Content.ReadAsStringAsync().Result;
             var selectedjob = Newtonsoft.Json.JsonConvert.DeserializeObject<Job>(jobs);
             application.jobTitle = selectedjob.title;
+            return selectedjob;
         }
 
+        private static Item MapJobtoItem(Job selectedjob)
+        {
 
+            var selectedItem = JsonConvert.DeserializeObject<Item>(File.ReadAllText("StaticFiles/ItemAsJob.json"));
+            selectedItem.Id = selectedjob.id;
+            selectedItem.Descriptor = new Descriptor() { Name = selectedjob.title, LongDesc = selectedjob.description };
+            selectedItem.LocationIds = selectedItem.FulfillmentIds = new List<string>();
+
+            if (selectedjob.responsibilities?.Count > 0)
+            {
+                var tagGroup = selectedItem.Tags.Where(T => T.Descriptor.Name == "Responsibilities")?.First();
+                tagGroup._List = new List<Tag>();
+                foreach (var r in selectedjob.responsibilities)
+                {
+
+                    tagGroup._List.Add(new Tag() { Value = r });
+                }
+
+            }
+
+            if (selectedjob.salary.pay?.Count > 0)
+            {
+                var tagGroup = selectedItem.Tags.Where(T => T.Descriptor.Code == "salary-info")?.First();
+                tagGroup._List = new List<Tag>();
+
+                foreach (var p in selectedjob.salary.pay)
+                {
+
+                    tagGroup._List.Add(new Tag()
+                    {
+                        Value = Convert.ToString(p.maxValue),
+                        Descriptor = new Descriptor() { Name = p.type.ToString() }
+                    });
+
+
+
+                }
+
+            }
+            if (selectedjob.qualifications?.Count > 0)
+            {
+                foreach (var q in selectedjob.qualifications)
+                {
+                    var tagGroup = selectedItem.Tags.Where(T => T.Descriptor.Name == q.type)?.First();
+                    tagGroup._List = new List<Tag>();
+                    foreach (var v in q.values)
+                    {
+                        tagGroup._List.Add(new Tag()
+                        {
+                            Descriptor = new Descriptor() { Code = v.kind, Name = v.kind },
+                            Value = v.value
+                        }); ;
+                    }
+                }
+            }
+
+            if (selectedjob.employmentType.Count > 0)
+            {
+                var tagGroup = selectedItem.Tags.Where(t => t.Descriptor.Code == "employment-info")?.First();
+                tagGroup._List = new List<Tag>();
+
+                foreach (var et in selectedjob.employmentType)
+                {
+                    tagGroup._List.Add(new Tag()
+                    {
+                        Descriptor = new Descriptor() { Code = "emp-duration-type", Name = "Employment Duration Type" },
+                        Value = et
+                    });
+                }
+            }
+
+            if (selectedjob.skills.Count > 0)
+            {
+                var tagGroup = selectedItem.Tags.Where(t => t.Descriptor.Code == "Skills")?.First();
+                tagGroup._List = new List<Tag>();
+
+                foreach (var s in selectedjob.skills)
+                {
+                    tagGroup._List.Add(new Tag { Descriptor = new Descriptor() { Code = s } });
+                }
+
+            }
+
+
+            return selectedItem;
+        }
     }
 }
 

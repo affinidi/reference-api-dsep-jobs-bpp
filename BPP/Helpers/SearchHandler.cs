@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Beckn.Models;
+using bpp.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using search.Models;
@@ -164,6 +165,8 @@ namespace bpp.Helpers
                 result.Context.MessageId = query.Context.MessageId;
                 result.Context.TransactionId = query.Context.TransactionId;
                 result.Context.Timestamp = DateTime.Now;
+                result.Context.BppId = Environment.GetEnvironmentVariable("bpp_subscriber_id");
+                result.Context.BppUri = Environment.GetEnvironmentVariable("bpp_url");
 
                 result.Message.Catalog.Providers = new List<Provider>();
             }

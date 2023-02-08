@@ -26,10 +26,10 @@ namespace bpp.Helpers
         {
             SingingString sg = createSigningString((message)); //creates  hashed request details 
             Console.WriteLine("Signing string: " + sg.signing_string);
-            var base64PrivateKey = Convert.ToBase64String(Encoding.UTF8.GetBytes("MFECAQEwBQYDK2VwBCIEIL+bRjLzmCxFFJFqYrUC/PYN9k+BZnUiKRBdKgiv2WC8gSEAsnVt99rW6reqsHFrQoh/X1dvT5777v+oYfnAzh62nDo="));
-            var signature = signMessage(sg.signing_string, "ajUi9HaYLyw/VckpiBvYGmj6FuHUcodOh0B12dipn1K0Wq1CSLxHpTNFmNUodSIzvp3lyOg/Wq2cIkCA0k7y1Q=="); // signs the message 
-            var subscriber_id = "affinidi.com.bpp";
-            var unique_key_id = "Affinidi";
+            //var base64PrivateKey = Convert.ToBase64String(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("bpp_privatekey")));
+            var signature = signMessage(sg.signing_string, Environment.GetEnvironmentVariable("bpp_privatekey")); // signs the message 
+            var subscriber_id = Environment.GetEnvironmentVariable("bpp_subscriber_id");
+            var unique_key_id = Environment.GetEnvironmentVariable("bpp_unique_key_id");
             //creates header data to be sent as Authorization key 
             string header = "keyId=" + subscriber_id + "|" + unique_key_id + "|" + "ed25519, algorithm = ed25519, created = " + sg.created + ", expires = " + sg.expires + ", headers = (" + sg.created + ") (" + sg.expires + ") digest, signature = " + signature;
             //string header =   $"Signature keyId = " ${subscriber_id}"|"${config.unique_key_id}|ed25519", algorithm = "ed25519", created = "${created}", expires = "${expires}", headers = "(created) (expires) digest", signature = "${signature}"";

@@ -21,6 +21,17 @@
     "message": {
         "order": {
             "id": "",
+            "provider": {
+                "descriptor": {
+
+                },
+                "locations": [
+
+                ],
+                "fulfillments": [
+
+                ]
+            },
             "items": [
 
             ]

@@ -11,6 +11,7 @@
     "location_ids": [
 
     ],
+    "fulfillment_ids": [],
     "tags": [
         {
             "descriptor": {
@@ -69,6 +70,15 @@
             "descriptor": {
                 "code": "employment-info",
                 "name": "Employment Information",
+                "list": [
+                    {}
+                ]
+            }
+        },
+        {
+            "descriptor": {
+                "code": "Skills",
+                "name": "skill requirement",
                 "list": [
                     {}
                 ]

@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using System.Runtime.Serialization;
-using Newtonsoft.Json;
-namespace search.Models
+
+using System.Text.Json.Serialization;
+
+namespace bpp.Models
 {
-    [JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum SalaryEnum
     {
         [EnumMember(Value = "baseSalary")]
@@ -23,6 +26,7 @@ namespace search.Models
         overtime = 4
     }
 
+    // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
     public class Address
     {
         public string name { get; set; }
@@ -68,24 +72,40 @@ namespace search.Models
         public string url { get; set; }
     }
 
+    public class OccupationalExperienceRequirement
+    {
+        public string type { get; set; }
+        public int monthsOfExperience { get; set; }
+    }
+
     public class Pay
     {
         public int minValue { get; set; }
         public int maxValue { get; set; }
         public string unitText { get; set; }
-        public SalaryEnum type { get; set; }
+        public string type { get; set; }
+    }
+
+    public class Qualification
+    {
+        public string type { get; set; }
+        public List<Value> values { get; set; }
     }
 
     public class Job
     {
         public string id { get; set; }
         public string title { get; set; }
-        public string datePosted { get; set; }
+        public DateTime datePosted { get; set; }
         public DateTime validThrough { get; set; }
         public string description { get; set; }
         public HiringOrganization hiringOrganization { get; set; }
         public JobLocation jobLocation { get; set; }
+        public List<string> jobLocationType { get; set; }
         public List<string> employmentType { get; set; }
+        public bool jobImmediateStart { get; set; }
+        public List<Qualification> qualifications { get; set; }
+        public List<OccupationalExperienceRequirement> OccupationalExperienceRequirements { get; set; }
         public Salary salary { get; set; }
         public Identifier identifier { get; set; }
         public OccupationalCategory occupationalCategory { get; set; }
@@ -97,6 +117,12 @@ namespace search.Models
     {
         public string currency { get; set; }
         public List<Pay> pay { get; set; }
+    }
+
+    public class Value
+    {
+        public string kind { get; set; }
+        public string value { get; set; }
     }
 
 
