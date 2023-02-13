@@ -21,7 +21,7 @@ namespace search.Controllers
         }
 
         [HttpGet]
-        [Route("getbyid/{id}")]
+        [Route("jobs/{id}")]
         public Job Getbyid(string id)
         {
 
@@ -30,7 +30,7 @@ namespace search.Controllers
         }
 
         [HttpGet]
-        [Route("application/{id}")]
+        [Route("applications/{id}")]
         public Application Applicationbyid(string id)
         {
 
@@ -39,10 +39,11 @@ namespace search.Controllers
         }
 
         [HttpGet]
-        [Route("getallapplicantions")]
+        [Route("applications")]
         public List<Application> GetApplications() => _opensearchHandler.FindApplications();
 
         [HttpPost]
+        [Route("jobs")]
         public IActionResult Post(Job job)
         {
             // var jobId = System.Guid.NewGuid().ToString();
@@ -74,17 +75,17 @@ namespace search.Controllers
             }
         }
         [HttpPost]
-        [Route("saveapplication")]
+        [Route("applications")]
         public IActionResult Post([FromBody] Application application)
         {
 
             var result = _opensearchHandler.SaveDoc(application);
-            return Ok(result);
+            return Created(result); // If Created exists in cs, it shhould be 204
         }
 
         [HttpPost]
         [Route("jobs")]
-        public IEnumerable<Job> Get(Query query)
+        public IEnumerable<Job> Find(Query query)
         {
             Console.WriteLine("New Request for search");
             Console.WriteLine(JsonConvert.SerializeObject(query));
