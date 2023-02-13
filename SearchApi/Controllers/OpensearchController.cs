@@ -16,6 +16,7 @@ namespace search.Controllers
         OpensearchHandler _opensearchHandler;
         public OpensearchController(OpensearchHandler opensearchHandler)
         {
+            Console.WriteLine("Current controller object hascode: " + this.GetHashCode().ToString());
             _opensearchHandler = opensearchHandler;
         }
 
