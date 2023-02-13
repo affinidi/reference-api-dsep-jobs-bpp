@@ -1,11 +1,10 @@
-#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-FROM mcr.microsoft.com/dotnet/aspnet:3.1 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:3.1-alpine AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:3.1 AS build
+FROM mcr.microsoft.com/dotnet/sdk:3.1-alpine AS build
 WORKDIR /src
 COPY ["nuget.config", "."]
 COPY ["search.csproj", "."]
@@ -20,4 +19,6 @@ RUN dotnet publish "search.csproj" -c Release -o /app/publish /p:UseAppHost=fals
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+RUN apk upgrade
+
 ENTRYPOINT ["dotnet", "search.dll"]

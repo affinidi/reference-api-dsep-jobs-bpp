@@ -16,7 +16,7 @@ namespace search.Controllers
         OpensearchHandler _opensearchHandler;
         public OpensearchController(OpensearchHandler opensearchHandler)
         {
-            Console.WriteLine("Current controller object hascode: " + this.GetHashCode().ToString());
+
             _opensearchHandler = opensearchHandler;
         }
 
@@ -43,7 +43,7 @@ namespace search.Controllers
         public List<Application> GetApplications() => _opensearchHandler.FindApplications();
 
         [HttpPost]
-        [Route("jobs")]
+        [Route("addjob")]
         public IActionResult Post(Job job)
         {
             // var jobId = System.Guid.NewGuid().ToString();
@@ -80,7 +80,7 @@ namespace search.Controllers
         {
 
             var result = _opensearchHandler.SaveDoc(application);
-            return Created(result); // If Created exists in cs, it shhould be 204
+            return Created("", result); // If Created exists in cs, it shhould be 204
         }
 
         [HttpPost]
