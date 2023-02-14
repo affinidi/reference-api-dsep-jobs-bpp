@@ -37,7 +37,9 @@
       "launchBrowser": true,
       "applicationUrl": "https://localhost:35776;http://localhost:29771",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "searchUrl": "http://localhost:5000/opensearch/jobs",
+        "searchbaseUrl": "http://localhost:5000/opensearch"
       }
     }
   }

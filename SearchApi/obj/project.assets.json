@@ -330,14 +330,14 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Volumes/Data-disk/src/DSEP/SearchApi/search.csproj",
+      "projectUniqueName": "/Volumes/Data-disk/ws/WS-gl/dsep-bpp/SearchApi/search.csproj",
       "projectName": "search",
-      "projectPath": "/Volumes/Data-disk/src/DSEP/SearchApi/search.csproj",
+      "projectPath": "/Volumes/Data-disk/ws/WS-gl/dsep-bpp/SearchApi/search.csproj",
       "packagesPath": "/Users/sanjaykumar/.nuget/packages/",
-      "outputPath": "/Volumes/Data-disk/src/DSEP/SearchApi/obj/",
+      "outputPath": "/Volumes/Data-disk/ws/WS-gl/dsep-bpp/SearchApi/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/Volumes/Data-disk/src/DSEP/SearchApi/NuGet.Config",
+        "/Volumes/Data-disk/ws/WS-gl/dsep-bpp/SearchApi/NuGet.Config",
         "/Users/sanjaykumar/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
