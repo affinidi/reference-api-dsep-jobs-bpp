@@ -19,7 +19,7 @@ namespace bpp.Helpers
         internal string BuildXinput(string id)
         {
             //id input can be used to create JOb specific Xinput, currently its generic TODO: form dynamic Xinput form
-            var xForm = File.ReadAllText("StaticFiles/Xinput.html");
+            var xForm = File.ReadAllText("StaticFiles/Xinput.txt");
             // This will be the ID given to BAP if they submit form
             // It wil be saved separately with Job ID On Init or confirm with JOb id and form ID
             var XinputFormID = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString();

@@ -12,4 +12,3 @@
     <label for="motivation">Why are you interested in this job?</label>
     <input type="text" name="motivation" />
 </form>
-
