@@ -28,13 +28,19 @@ namespace bpp.Controllers
         private SelectHandler _selectHandler;
         private ConfirmHandler _confirmHandler;
         private StausHandler _stausHandler;
+        private InitHandler _InitHandler;
 
-        public BecknProviderPlatformBPPApiController(SearchHandler searchHandler, SelectHandler selectHandler, ConfirmHandler confirmHandler, StausHandler stausHandler)
+        public BecknProviderPlatformBPPApiController(SearchHandler searchHandler,
+            SelectHandler selectHandler,
+            ConfirmHandler confirmHandler,
+            StausHandler stausHandler,
+            InitHandler initHandler)
         {
             _searchHandler = searchHandler;
             _selectHandler = selectHandler;
             _confirmHandler = confirmHandler;
             _stausHandler = stausHandler;
+            _InitHandler = initHandler;
         }
 
 
@@ -78,7 +84,11 @@ namespace bpp.Controllers
         public virtual IActionResult SelectPost([FromBody] SelectBody body)
         {
 
-            _selectHandler.SelectAndReply(body);
+            Task.Run(() =>
+            {
+                _selectHandler.SelectAndReply(body);
+            }).ConfigureAwait(false);
+
 
             var response = new Ack() { Status = Ack.StatusEnum.ACKEnum };
             return new ObjectResult(response);
@@ -92,7 +102,11 @@ namespace bpp.Controllers
         //[SwaggerResponse(statusCode: 200, type: typeof(InlineResponse200), description: "Acknowledgement of message received")]
         public virtual IActionResult ConfirmPost([FromBody] ConfirmBody body)
         {
-            _ = _confirmHandler.SaveApplication(body);
+            Task.Run(() =>
+            {
+                _confirmHandler.SaveApplication(body);
+            }).ConfigureAwait(false);
+
 
             var response = new Ack() { Status = Ack.StatusEnum.ACKEnum };
             return new ObjectResult(response);
@@ -102,30 +116,27 @@ namespace bpp.Controllers
         /// 
         /// </summary>
         /// <remarks>Initialize an order by providing billing and/or shipping details</remarks>
-        /// <param name="body">TODO</param>
-        /// <response code="200">Acknowledgement of message received</response>
-        //[HttpPost]
-        //[Route("/init")]
-        //[Authorize(AuthenticationSchemes = ApiKeyAuthenticationHandler.SchemeName)]
-        //[ValidateModelState]
-        //[SwaggerOperation("InitPost")]
+        /// <param name = "body" > TODO </ param >
+        /// < response code="200">Acknowledgement of message received</response>
+        [HttpPost]
+        [Route("/init")]
+        // [Authorize(AuthenticationSchemes = ApiKeyAuthenticationHandler.SchemeName)]
+        // [ValidateModelState]
+        [SwaggerOperation("InitPost")]
         //[SwaggerResponse(statusCode: 200, type: typeof(InlineResponse200), description: "Acknowledgement of message received")]
-        //public virtual IActionResult InitPost([FromBody] InitBody body)
-        //{
-        //    //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-        //    // return StatusCode(200, default(InlineResponse200));
-        //    string exampleJson = null;
-        //    exampleJson = "{\n  \"message\" : {\n    \"ack\" : {\n      \"status\" : \"ACK\"\n    }\n  },\n  \"error\" : {\n    \"path\" : \"path\",\n    \"code\" : \"code\",\n    \"type\" : \"CONTEXT-ERROR\",\n    \"message\" : \"message\"\n  }\n}";
+        public virtual IActionResult InitPost([FromBody] InitBody body)
+        {
+            //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
+            // return StatusCode(200, default(InlineResponse200));
 
-        //    var example = exampleJson != null
-        //    ? JsonConvert.DeserializeObject<InlineResponse200>(exampleJson)
-        //    : default(InlineResponse200);            //TODO: Change the data returned
-        //    return new ObjectResult(example);
-        //}
+            Task.Run(() =>
+            {
+                _InitHandler.InitJobApplication(body);
+            }).ConfigureAwait(false);
 
-
-
-
+            var response = new Ack() { Status = Ack.StatusEnum.ACKEnum };
+            return new ObjectResult(response);
+        }
 
 
         /// <summary>
@@ -142,7 +153,11 @@ namespace bpp.Controllers
         //[SwaggerResponse(statusCode: 200, type: typeof(InlineResponse200), description: "Acknowledgement of message received")]
         public virtual IActionResult StatusPost([FromBody] StatusBody body)
         {
-            _stausHandler.SendStatus(body);
+            Task.Run(() =>
+            {
+                _stausHandler.SendStatus(body);
+            }).ConfigureAwait(false);
+
 
             var response = new Ack() { Status = Ack.StatusEnum.ACKEnum };
             return new ObjectResult(response);

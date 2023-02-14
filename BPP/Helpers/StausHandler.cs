@@ -47,7 +47,7 @@ namespace bpp.Helpers
         {
             //var application = new Application("dummmy");
             var url = Environment.GetEnvironmentVariable("searchbaseUrl")?.ToString();
-            url = url + "/application/" + applicationId;
+            url = url + "/applications/" + applicationId;
 
             Console.WriteLine(" internal search for Application ID  : " + applicationId);
 
@@ -171,7 +171,7 @@ namespace bpp.Helpers
         private Job FetchJob(string jobid)
         {
             var url = Environment.GetEnvironmentVariable("searchbaseUrl")?.ToString();
-            url = url + "/getbyid/" + jobid;
+            url = url + "/jobs/" + jobid;
 
             Console.WriteLine(" internal job search for job ID  : " + jobid);
 

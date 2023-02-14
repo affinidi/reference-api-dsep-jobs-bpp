@@ -30,7 +30,7 @@ namespace bpp.Helpers
                 var application = new Application(item.Id);
                 application.transactionid = body.Context.TransactionId;
                 application.orderId = body.Message.Order?.Id;
-                application.id = aplicationID = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();//Guid.NewGuid().ToString("n");
+                application.id = aplicationID = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString();//Guid.NewGuid().ToString("n");
                 var fulfillment = body.Message?.Order?.Fulfillments.Where(x => x.Id == item.FulfillmentIds.FirstOrDefault()).FirstOrDefault();
                 application.person = fulfillment?.Customer?.Person;
                 application.contact = fulfillment?.Customer?.Contact;
@@ -49,7 +49,7 @@ namespace bpp.Helpers
                     Console.WriteLine(" application Details : " + json);
 
                     var url = Environment.GetEnvironmentVariable("searchbaseUrl")?.ToString();
-                    url = url + "/saveapplication";
+                    url = url + "/applications";
                     using var client = new HttpClient();
 
                     response = client.PostAsync(url, data).Result;
@@ -201,7 +201,7 @@ namespace bpp.Helpers
         private static Job SetJobTitle(Application application)
         {
             var url = Environment.GetEnvironmentVariable("searchbaseUrl")?.ToString();
-            url = url + "/getbyid/" + application.jobid;
+            url = url + "/jobs/" + application.jobid;
 
             Console.WriteLine(" internal job search for job ID  : " + application.jobid);
 

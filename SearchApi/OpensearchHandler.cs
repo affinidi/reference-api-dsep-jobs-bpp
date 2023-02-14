@@ -204,13 +204,13 @@ namespace search
             //return new Object();
         }
 
-        //internal object SaveDoc(Job job)
-        //{
-        //    _logger.LogInformation("Saving Job : " + job.id);
-        //    var response = _client.Index(job, i => i.Index("jobs").Id(job.id));
-        //    return response.IsValid ? response.Id : response.ApiCall?.OriginalException?.ToString();
-        //    //return new Object();
-        //}
+        internal string SaveXinput(XinputData xinputData)
+        {
+            _logger.LogInformation("Saving posted Xinput Data");
+            var response = _client.Index(xinputData, i => i.Index("xinputs").Id(xinputData.xinputFormID));
+            return response.IsValid ? response.Id : response.ApiCall?.OriginalException?.ToString();
+        }
+
     }
 }
 
