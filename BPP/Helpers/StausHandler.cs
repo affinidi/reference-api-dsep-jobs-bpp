@@ -23,16 +23,14 @@ namespace bpp.Helpers
         {
         }
 
-        internal void SendStatus(StatusBody body)
+        public async Task SendStatus(StatusBody body)
         {
             try
             {
-
-
                 _statusBody = body;
                 string applicationId = body.Message.OrderId;
                 var applicationDetails = GetApplication(applicationId);
-                RespondOnStatus(applicationDetails);
+                await RespondOnStatus(applicationDetails);
             }
             catch (Exception e)
             {
@@ -40,8 +38,6 @@ namespace bpp.Helpers
                 Console.WriteLine(e.StackTrace);
             }
         }
-
-
 
         private Application GetApplication(string applicationId)
         {
@@ -59,7 +55,7 @@ namespace bpp.Helpers
             return selectedApplication;
         }
 
-        private void RespondOnStatus(Application applicationDetails)
+        private async Task RespondOnStatus(Application applicationDetails)
         {
             var onStatusBody = JsonConvert.DeserializeObject<OnConfirmBody>(File.ReadAllText("StaticFiles/OnStatus.json"));
             onStatusBody.Context.MessageId = _statusBody.Context.MessageId;
@@ -86,7 +82,7 @@ namespace bpp.Helpers
                     using var postclient = new HttpClient();
                     postclient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Signature", AuthUtil.createAuthorizationHeader(json));
 
-                    var postResponse = postclient.PostAsync(url, data).Result;
+                    var postResponse = await postclient.PostAsync(url, data);
 
                     var result = postResponse.Content.ReadAsStringAsync().Result;
                     Console.WriteLine("On_status call result: " + result);
@@ -146,7 +142,6 @@ namespace bpp.Helpers
 
         private Item MapJobToItem(Job job)
         {
-            int locId = 0;
             var selectedItem = JsonConvert.DeserializeObject<Item>(File.ReadAllText("StaticFiles/ItemAsJob.json"));
             selectedItem.Id = job.id;
             selectedItem.Descriptor = new Descriptor() { Name = job.title, LongDesc = job.description };

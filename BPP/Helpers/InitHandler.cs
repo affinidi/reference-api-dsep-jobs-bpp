@@ -1,51 +1,55 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using Beckn.Models;
 using bpp.Models;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using search.Models;
-
 
 namespace bpp.Helpers
 {
-    public class SelectHandler
+    public class InitHandler
     {
-
-<<<<<<< Updated upstream
-        public async void SelectAndReply(SelectBody selectBody)
-=======
         static ILogger _logger;
-        public SelectHandler(ILoggerFactory loggerfactory)
+        public InitHandler(ILoggerFactory logfactory)
         {
-            _logger = loggerfactory.CreateLogger<SelectHandler>();
+            _logger = logfactory.CreateLogger<InitHandler>();
         }
-        public async Task SelectAndReply(SelectBody selectBody)
->>>>>>> Stashed changes
+
+        public async Task InitJobApplication(InitBody body)
         {
             try
             {
                 Job selectedjob;
                 HttpResponseMessage response;
-                SelectJob(selectBody, out selectedjob, out response);
-                OnSelectBody selectResult = BuildRespons(selectBody, selectedjob);
-                await SendResponse(selectBody, response, selectResult);
+                var xinput = body.Message.Order.Items.First().Xinput;
+                if (Validate(xinput))
+                {
+                    SelectJob(body, out selectedjob, out response);
+                    OnInitBody InitResult = BuildRespons(body, selectedjob);
+                    InitResult.Message.Order.Fulfillments = body.Message.Order.Fulfillments;
+                    InitResult.Message.Order.Items.First().Xinput = xinput;
+                    await SendResponse(body, response, InitResult);
+                }
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                Console.WriteLine(e.StackTrace);
+                _logger.LogError(e.Message);
+                _logger.LogError(e.StackTrace);
             }
-
         }
 
-        private static void SelectJob(SelectBody selectBody, out Job selectedjob, out HttpResponseMessage response)
+        private bool Validate(XInput xinput)
+        {
+            return true; //TODO add logic
+        }
+
+        private static void SelectJob(InitBody selectBody, out Job selectedjob, out HttpResponseMessage response)
         {
             string selectedJObId = selectBody.Message.Order?.Items?.First()?.Id;
             selectedjob = null;
@@ -56,9 +60,9 @@ namespace bpp.Helpers
             {
 
                 var url = Environment.GetEnvironmentVariable("searchbaseUrl")?.ToString();
-                url = url + "/getbyid/" + selectedJObId;
+                url = url + "/jobs/" + selectedJObId;
                 client = new HttpClient();
-                Console.WriteLine(" internal job search at : " + url);
+                _logger.LogInformation(" internal job search at : " + url);
 
                 response = client.GetAsync(url).Result;
                 response.EnsureSuccessStatusCode();
@@ -67,16 +71,16 @@ namespace bpp.Helpers
             }
             catch (Exception e)
             {
-                Console.WriteLine("Search Error");
-                Console.WriteLine(e.Message);
-                Console.WriteLine(response?.Content.ReadAsStringAsync().Result);
+                _logger.LogError("Search Error");
+                _logger.LogError(e.Message);
+                _logger.LogError(response?.Content.ReadAsStringAsync().Result);
 
             }
         }
 
-        private static OnSelectBody BuildRespons(SelectBody selectBody, Job selectedjob)
+        private static OnInitBody BuildRespons(InitBody selectBody, Job selectedjob)
         {
-            var selectResult = JsonConvert.DeserializeObject<OnSelectBody>(File.ReadAllText("StaticFiles/onSelect.json"));
+            var selectResult = JsonConvert.DeserializeObject<OnInitBody>(File.ReadAllText("StaticFiles/onInit.json"));
             SetContext(selectBody, selectResult);
 
             if (selectedjob != null)
@@ -131,20 +135,16 @@ namespace bpp.Helpers
                 }
 
 
-
-
-
             }
             else
             {
-                Console.WriteLine("no job founds from open search. returning error in on select body");
+                _logger.LogInformation("no job founds from open search. returning error in on select body");
                 selectResult.Error = new Error() { Message = "Could not find the selected job in catalog. Please check with BPP" };
 
             }
 
             return selectResult;
         }
-
         private static Item MapJobtoItem(Job selectedjob)
         {
 
@@ -152,6 +152,7 @@ namespace bpp.Helpers
             selectedItem.Id = selectedjob.id;
             selectedItem.Descriptor = new Descriptor() { Name = selectedjob.title, LongDesc = selectedjob.description };
             selectedItem.LocationIds = selectedItem.FulfillmentIds = new List<string>();
+            selectedItem.Xinput.Form.Url = Environment.GetEnvironmentVariable("bpp_Xinput_url") + "/formid/" + selectedjob.id;
 
             if (selectedjob.responsibilities?.Count > 0)
             {
@@ -231,39 +232,7 @@ namespace bpp.Helpers
 
             return selectedItem;
         }
-
-        private static async Task SendResponse(SelectBody selectBody, HttpResponseMessage response, OnSelectBody selectResult)
-        {
-            if (selectResult.Message.Order.Items.Count > 0)
-            {
-                try
-                {
-                    var json = JsonConvert.SerializeObject(selectResult, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-
-                    var data = new StringContent(json, Encoding.UTF8, "application/json");
-
-                    var url = selectResult.Context.BapUri + "on_select";
-                    using var postclient = new HttpClient();
-                    postclient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Signature", AuthUtil.createAuthorizationHeader(json));
-
-                    var postResponse = await postclient.PostAsync(url, data);
-
-                    var result = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine(result);
-
-                }
-                catch (HttpRequestException e)
-                {
-                    Console.WriteLine("\nException Caught!");
-                    Console.WriteLine("Message :{0} ", e.Message);
-                }
-            }
-            else
-            {
-                Console.WriteLine("No job found for given query TID : " + selectBody.Context.TransactionId);
-            }
-        }
-        static void SetContext(SelectBody query, OnSelectBody result)
+        static void SetContext(InitBody query, OnInitBody result)
         {
             //var tags = new Tags() { { "", "" } };
             result.Context.BapId = query?.Context.BapId;
@@ -275,6 +244,38 @@ namespace bpp.Helpers
             result.Context.BppUri = Environment.GetEnvironmentVariable("bpp_url");
 
 
+        }
+
+        private static async Task SendResponse(InitBody selectBody, HttpResponseMessage response, OnInitBody selectResult)
+        {
+            if (selectResult.Message.Order.Items.Count > 0)
+            {
+                try
+                {
+                    var json = JsonConvert.SerializeObject(selectResult, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+
+                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    var url = selectResult.Context.BapUri + "on_init";
+                    using var postclient = new HttpClient();
+                    postclient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Signature", AuthUtil.createAuthorizationHeader(json));
+
+                    var postResponse = await postclient.PostAsync(url, data);
+
+                    var result = await postResponse.Content.ReadAsStringAsync();
+                    _logger.LogInformation(result);
+
+                }
+                catch (HttpRequestException e)
+                {
+                    _logger.LogError("\nException Caught!");
+                    _logger.LogError("Message :{0} ", e.Message);
+                }
+            }
+            else
+            {
+                _logger.LogInformation("No job found for given query TID : " + selectBody.Context.TransactionId);
+            }
         }
     }
 }

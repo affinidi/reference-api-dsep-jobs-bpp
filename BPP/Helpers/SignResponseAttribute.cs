@@ -8,20 +8,13 @@ using Newtonsoft.Json;
 
 public class SignResponseAttribute : ActionFilterAttribute
 {
-    private RSA _rsa;
-
-    //public SignResponseAttribute()
-    //{
-    //    _rsa = RSA.Create();
-    //    // load private key
-    //}
 
     public override void OnActionExecuted(ActionExecutedContext context)
     {
         if (context.Result is ObjectResult result)
         {
             var json = JsonConvert.SerializeObject(result.Value);
-          //  byte[] signature = _rsa.SignData(Encoding.UTF8.GetBytes(json), HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+            //  byte[] signature = _rsa.SignData(Encoding.UTF8.GetBytes(json), HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
             var signature64 = AuthUtil.createAuthorizationHeader(json);  //Convert.ToBase64String(signature);
             Console.WriteLine(" adding Authorization headers");
             context.HttpContext.Response.Headers.Add("authorization", signature64);

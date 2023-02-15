@@ -1,15 +1,6 @@
-
-using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using Swashbuckle.AspNetCore.SwaggerGen;
-using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations;
 using bpp.Attributes;
-using bpp.Security;
-using Microsoft.AspNetCore.Authorization;
-
 using bpp.Helpers;
 using System.Threading.Tasks;
 using Beckn.Models;
@@ -46,17 +37,14 @@ namespace bpp.Controllers
         /// <response code="200">Acknowledgement of message received</response>
         [HttpPost]
         [Route("/search")]
-        //[Authorize(AuthenticationSchemes = ApiKeyAuthenticationHandler.SchemeName)]
-        //[ValidateModelState]
-        // [SignResponse]
+        [ValidateModelState]
         [SwaggerOperation("SearchPost")]
         // [SwaggerResponse(statusCode: 200, type: typeof(InlineResponse200), description: "Acknowledgement of message received")]
         public virtual IActionResult SearchPost([FromBody] SearchBody body)
         {
-
             Task.Run(() =>
            {
-               _searchHandler.SearchAndReply(body);
+               _ = _searchHandler.SearchAndReply(body);
            }).ConfigureAwait(false);
 
             var response = new Ack() { Status = Ack.StatusEnum.ACKEnum };
@@ -71,14 +59,21 @@ namespace bpp.Controllers
         /// <response code="200">Acknowledgement of message received</response>
         [HttpPost]
         [Route("/select")]
-
         [ValidateModelState]
         [SwaggerOperation("SelectPost")]
         //[SwaggerResponse(statusCode: 200, type: typeof(InlineResponse200), description: "Acknowledgement of message received")]
         public virtual IActionResult SelectPost([FromBody] SelectBody body)
         {
+<<<<<<< Updated upstream
 
             _selectHandler.SelectAndReply(body);
+=======
+            Task.Run(() =>
+            {
+                _ = _selectHandler.SelectAndReply(body);
+            }).ConfigureAwait(false);
+
+>>>>>>> Stashed changes
 
             var response = new Ack() { Status = Ack.StatusEnum.ACKEnum };
             return new ObjectResult(response);
@@ -86,13 +81,20 @@ namespace bpp.Controllers
 
         [HttpPost]
         [Route("/confirm")]
-
         [ValidateModelState]
         [SwaggerOperation("ConfirmPost")]
         //[SwaggerResponse(statusCode: 200, type: typeof(InlineResponse200), description: "Acknowledgement of message received")]
         public virtual IActionResult ConfirmPost([FromBody] ConfirmBody body)
         {
+<<<<<<< Updated upstream
             _ = _confirmHandler.SaveApplication(body);
+=======
+            Task.Run(() =>
+            {
+                _ = _confirmHandler.SaveApplication(body);
+            }).ConfigureAwait(false);
+
+>>>>>>> Stashed changes
 
             var response = new Ack() { Status = Ack.StatusEnum.ACKEnum };
             return new ObjectResult(response);
@@ -102,6 +104,7 @@ namespace bpp.Controllers
         /// 
         /// </summary>
         /// <remarks>Initialize an order by providing billing and/or shipping details</remarks>
+<<<<<<< Updated upstream
         /// <param name="body">TODO</param>
         /// <response code="200">Acknowledgement of message received</response>
         //[HttpPost]
@@ -125,6 +128,21 @@ namespace bpp.Controllers
 
 
 
+=======
+        /// <param name = "body" ></param>
+        /// <response code="200">Acknowledgement of message received</response>
+        [HttpPost]
+        [Route("/init")]
+        [ValidateModelState]
+        [SwaggerOperation("InitPost")]
+        //[SwaggerResponse(statusCode: 200, type: typeof(InlineResponse200), description: "Acknowledgement of message received")]
+        public virtual IActionResult InitPost([FromBody] InitBody body)
+        {
+            Task.Run(() =>
+            {
+                _ = _InitHandler.InitJobApplication(body);
+            }).ConfigureAwait(false);
+>>>>>>> Stashed changes
 
 
 
@@ -132,26 +150,28 @@ namespace bpp.Controllers
         /// 
         /// </summary>
         /// <remarks>Fetch the latest order object</remarks>
-        /// <param name="body">TODO</param>
+        /// <param name="body"></param>
         /// <response code="200">Acknowledgement of message received</response>
         [HttpPost]
         [Route("/status")]
-        //[Authorize(AuthenticationSchemes = ApiKeyAuthenticationHandler.SchemeName)]
-        //[ValidateModelState]
+        [ValidateModelState]
         [SwaggerOperation("StatusPost")]
         //[SwaggerResponse(statusCode: 200, type: typeof(InlineResponse200), description: "Acknowledgement of message received")]
         public virtual IActionResult StatusPost([FromBody] StatusBody body)
         {
+<<<<<<< Updated upstream
             _stausHandler.SendStatus(body);
+=======
+            Task.Run(() =>
+            {
+                _ = _stausHandler.SendStatus(body);
+            }).ConfigureAwait(false);
+
+>>>>>>> Stashed changes
 
             var response = new Ack() { Status = Ack.StatusEnum.ACKEnum };
             return new ObjectResult(response);
         }
-
-
-
-
-
 
 
     }
