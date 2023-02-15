@@ -27,3 +27,5 @@ BAP/obj/Debug/netcoreapp3.1/staticwebassets/BAP.StaticWebAssets.Pack.cache
 SearchApi/obj/Debug/netcoreapp3.1/search.genruntimeconfig.cache
 SearchApi/obj/project.assets.json
 SearchApi/obj/project.nuget.cache
+*.dll
+*.dll

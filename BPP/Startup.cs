@@ -64,7 +64,10 @@ namespace bpp
                 .AddScoped<ConfirmHandler>()
                 .AddScoped<SelectHandler>()
                 .AddScoped<SearchHandler>()
-                .AddScoped<StausHandler>();
+                .AddScoped<StausHandler>()
+                .AddScoped<InitHandler>()
+                .AddScoped<XinputHandler>();
+
 
             //services.AddAuthentication(ApiKeyAuthenticationHandler.SchemeName)
             //    .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>(ApiKeyAuthenticationHandler.SchemeName, null);

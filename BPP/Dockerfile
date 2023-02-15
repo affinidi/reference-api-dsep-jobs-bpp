@@ -12,7 +12,7 @@ RUN dotnet restore
 # copy everything else and build
 COPY . ./
 RUN dotnet publish -c Release -o out
-
+copy ./StaticFiles/Xinput.txt /app/out/StaticFiles/Xinput.txt
 # build runtime image
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-alpine
 WORKDIR /app

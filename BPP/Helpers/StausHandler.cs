@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Beckn.Models;
 using bpp.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using search.Models;
 using static System.Net.Mime.MediaTypeNames;
@@ -17,10 +18,12 @@ namespace bpp.Helpers
 {
     public class StausHandler
     {
+        static ILogger _logger;
         StatusBody _statusBody;
         Job _job;
-        public StausHandler()
+        public StausHandler(ILoggerFactory loggerfactory)
         {
+            _logger = loggerfactory.CreateLogger<StausHandler>();
         }
 
         public async Task SendStatus(StatusBody body)
@@ -34,8 +37,8 @@ namespace bpp.Helpers
             }
             catch (Exception e)
             {
-                Console.WriteLine(" Error in  Status API  " + e.Message);
-                Console.WriteLine(e.StackTrace);
+                _logger.LogError(" Error in  Status API  " + e.Message);
+                _logger.LogError(e.StackTrace);
             }
         }
 
@@ -43,9 +46,9 @@ namespace bpp.Helpers
         {
             //var application = new Application("dummmy");
             var url = Environment.GetEnvironmentVariable("searchbaseUrl")?.ToString();
-            url = url + "/application/" + applicationId;
+            url = url + "/applications/" + applicationId;
 
-            Console.WriteLine(" internal search for Application ID  : " + applicationId);
+            _logger.LogInformation(" internal search for Application ID  : " + applicationId);
 
             using var client = new HttpClient();
             var response = client.GetAsync(url).Result;
@@ -85,18 +88,18 @@ namespace bpp.Helpers
                     var postResponse = await postclient.PostAsync(url, data);
 
                     var result = postResponse.Content.ReadAsStringAsync().Result;
-                    Console.WriteLine("On_status call result: " + result);
+                    _logger.LogInformation("On_status call result: " + result);
 
                 }
                 catch (HttpRequestException e)
                 {
-                    Console.WriteLine("\nException Caught in On_status API call to BAP !");
-                    Console.WriteLine("Message :{0} ", e.Message);
+                    _logger.LogError("\nException Caught in On_status API call to BAP !");
+                    _logger.LogError("Message :{0} ", e.Message);
                 }
             }
             else
             {
-                Console.WriteLine("No job found for given application TID : " + applicationDetails.id);
+                _logger.LogInformation("No job found for given application TID : " + applicationDetails.id);
             }
         }
 
@@ -166,9 +169,9 @@ namespace bpp.Helpers
         private Job FetchJob(string jobid)
         {
             var url = Environment.GetEnvironmentVariable("searchbaseUrl")?.ToString();
-            url = url + "/getbyid/" + jobid;
+            url = url + "/jobs/" + jobid;
 
-            Console.WriteLine(" internal job search for job ID  : " + jobid);
+            _logger.LogInformation(" internal job search for job ID  : " + jobid);
 
             using var client = new HttpClient();
             var response = client.GetAsync(url).Result;

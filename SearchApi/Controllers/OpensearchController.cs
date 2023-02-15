@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using bpp.Helpers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using search.Models;
 
@@ -13,10 +14,11 @@ namespace search.Controllers
     [Route("[controller]")]
     public class OpensearchController : ControllerBase
     {
+        ILogger _logger;
         OpensearchHandler _opensearchHandler;
-        public OpensearchController(OpensearchHandler opensearchHandler)
+        public OpensearchController(OpensearchHandler opensearchHandler, ILoggerFactory loggerfactory)
         {
-
+            _logger = loggerfactory.CreateLogger<OpensearchController>();
             _opensearchHandler = opensearchHandler;
         }
 
@@ -39,8 +41,12 @@ namespace search.Controllers
         }
 
         [HttpGet]
-        [Route("applications")]
+        [Route("allapplications")]
         public List<Application> GetApplications() => _opensearchHandler.FindApplications();
+
+        [HttpGet]
+        [Route("applications")]
+        public List<Application> GetApplicationForJob(string jobid) => _opensearchHandler.FindApplications(jobid);
 
         [HttpPost]
         [Route("addjob")]
@@ -84,8 +90,8 @@ namespace search.Controllers
         [Route("jobs")]
         public IEnumerable<Job> Find(Query query)
         {
-            Console.WriteLine("New Request for search");
-            Console.WriteLine(JsonConvert.SerializeObject(query));
+            _logger.LogInformation("New Request for search");
+            _logger.LogInformation(JsonConvert.SerializeObject(query));
 
             var jobs = new List<Job>();
             if (!string.IsNullOrEmpty(query.title))
@@ -115,9 +121,9 @@ namespace search.Controllers
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                //Console.WriteLine("query jobtype :" + query?.joblocation[0]);
-                Console.WriteLine(e.StackTrace);
+                _logger.LogError(e.Message);
+
+                _logger.LogError(e.StackTrace);
 
             }
             return jobs;
@@ -132,9 +138,9 @@ namespace search.Controllers
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                Console.WriteLine("query jobtype :" + query);
-                Console.WriteLine(e.StackTrace);
+                _logger.LogError(e.Message);
+                _logger.LogError("query jobtype :" + query);
+                _logger.LogError(e.StackTrace);
 
             }
             return jobs;
