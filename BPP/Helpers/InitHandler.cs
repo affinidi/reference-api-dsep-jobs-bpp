@@ -1,49 +1,55 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using Beckn.Models;
 using bpp.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using search.Models;
-
 
 namespace bpp.Helpers
 {
-    public class SelectHandler
+    public class InitHandler
     {
-
         static ILogger _logger;
-        public SelectHandler(ILoggerFactory loggerfactory)
+        public InitHandler(ILoggerFactory logfactory)
         {
-            _logger = loggerfactory.CreateLogger<SelectHandler>();
+            _logger = logfactory.CreateLogger<InitHandler>();
         }
-        public async void SelectAndReply(SelectBody selectBody)
-        {
 
+        public async void InitJobApplication(InitBody body)
+        {
             try
             {
                 Job selectedjob;
                 HttpResponseMessage response;
-                SelectJob(selectBody, out selectedjob, out response);
-                OnSelectBody selectResult = BuildRespons(selectBody, selectedjob);
-                await SendResponse(selectBody, response, selectResult);
+                var xinput = body.Message.Order.Items.First().Xinput;
+                if (Validate(xinput))
+                {
+                    SelectJob(body, out selectedjob, out response);
+                    OnInitBody InitResult = BuildRespons(body, selectedjob);
+                    InitResult.Message.Order.Fulfillments = body.Message.Order.Fulfillments;
+                    InitResult.Message.Order.Items.First().Xinput = xinput;
+                    await SendResponse(body, response, InitResult);
+                }
             }
             catch (Exception e)
             {
                 _logger.LogError(e.Message);
                 _logger.LogError(e.StackTrace);
             }
-
         }
 
-        private static void SelectJob(SelectBody selectBody, out Job selectedjob, out HttpResponseMessage response)
+        private bool Validate(XInput xinput)
+        {
+            return true; //TODO add logic
+        }
+
+        private static void SelectJob(InitBody selectBody, out Job selectedjob, out HttpResponseMessage response)
         {
             string selectedJObId = selectBody.Message.Order?.Items?.First()?.Id;
             selectedjob = null;
@@ -72,9 +78,9 @@ namespace bpp.Helpers
             }
         }
 
-        private static OnSelectBody BuildRespons(SelectBody selectBody, Job selectedjob)
+        private static OnInitBody BuildRespons(InitBody selectBody, Job selectedjob)
         {
-            var selectResult = JsonConvert.DeserializeObject<OnSelectBody>(File.ReadAllText("StaticFiles/onSelect.json"));
+            var selectResult = JsonConvert.DeserializeObject<OnInitBody>(File.ReadAllText("StaticFiles/onInit.json"));
             SetContext(selectBody, selectResult);
 
             if (selectedjob != null)
@@ -129,9 +135,6 @@ namespace bpp.Helpers
                 }
 
 
-
-
-
             }
             else
             {
@@ -142,7 +145,6 @@ namespace bpp.Helpers
 
             return selectResult;
         }
-
         private static Item MapJobtoItem(Job selectedjob)
         {
 
@@ -230,8 +232,21 @@ namespace bpp.Helpers
 
             return selectedItem;
         }
+        static void SetContext(InitBody query, OnInitBody result)
+        {
+            //var tags = new Tags() { { "", "" } };
+            result.Context.BapId = query?.Context.BapId;
+            result.Context.BapUri = query?.Context.BapUri;
+            result.Context.MessageId = query.Context.MessageId;
+            result.Context.TransactionId = query.Context.TransactionId;
+            result.Context.Timestamp = DateTime.Now;
+            result.Context.BppId = Environment.GetEnvironmentVariable("bpp_subscriber_id");
+            result.Context.BppUri = Environment.GetEnvironmentVariable("bpp_url");
 
-        private static async Task SendResponse(SelectBody selectBody, HttpResponseMessage response, OnSelectBody selectResult)
+
+        }
+
+        private static async Task SendResponse(InitBody selectBody, HttpResponseMessage response, OnInitBody selectResult)
         {
             if (selectResult.Message.Order.Items.Count > 0)
             {
@@ -241,16 +256,14 @@ namespace bpp.Helpers
 
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
 
-                    var url = selectResult.Context.BapUri + "on_select";
+                    var url = selectResult.Context.BapUri + "on_init";
                     using var postclient = new HttpClient();
                     postclient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Signature", AuthUtil.createAuthorizationHeader(json));
 
                     var postResponse = await postclient.PostAsync(url, data);
 
                     var result = await postResponse.Content.ReadAsStringAsync();
-                    _logger.LogInformation("response from BAP API for on_select : " + result);
-
-
+                    _logger.LogInformation(result);
 
                 }
                 catch (HttpRequestException e)
@@ -263,19 +276,6 @@ namespace bpp.Helpers
             {
                 _logger.LogInformation("No job found for given query TID : " + selectBody.Context.TransactionId);
             }
-        }
-        static void SetContext(SelectBody query, OnSelectBody result)
-        {
-            //var tags = new Tags() { { "", "" } };
-            result.Context.BapId = query?.Context.BapId;
-            result.Context.BapUri = query?.Context.BapUri;
-            result.Context.MessageId = query.Context.MessageId;
-            result.Context.TransactionId = query.Context.TransactionId;
-            result.Context.Timestamp = DateTime.Now;
-            result.Context.BppId = Environment.GetEnvironmentVariable("bpp_subscriber_id");
-            result.Context.BppUri = Environment.GetEnvironmentVariable("bpp_url");
-
-
         }
     }
 }

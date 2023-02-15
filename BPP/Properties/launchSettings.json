@@ -23,7 +23,13 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "searchUrl": "http://localhost:5000/opensearch/jobs",
-        "searchbaseUrl": "http://localhost:5000/opensearch"
+        "searchbaseUrl": "http://localhost:5000/opensearch",
+        "bpp_Xinput_url": "https://localhost:35776/xinput",
+        "bpp_url": "https://localhost:35776",
+        "bpp_privatekey": "ajUi9HaYLyw/VckpiBvYGmj6FuHUcodOh0B12dipn1K0Wq1CSLxHpTNFmNUodSIzvp3lyOg/Wq2cIkCA0k7y1Q==",
+        "bpp_subscriber_id": "your-bpp-id",
+        "bpp_unique_key_id": "bpp_unique_key_id",
+        "save_xinput_url": "http://localhost:5000/xinput"
       }
     },
     "Docker": {

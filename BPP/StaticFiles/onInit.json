@@ -7,7 +7,7 @@
                 "name": "India"
             }
         },
-        "action": "on_select",
+        "action": "on_init",
         "version": "1.0.0",
         "bap_id": "",
         "bap_uri": "",
@@ -33,8 +33,12 @@
             },
             "items": [
 
-            ]
-
+            ],
+            "xinput": {
+                "form": {
+                    "url": ""
+                }
+            }
         }
     }
 }
