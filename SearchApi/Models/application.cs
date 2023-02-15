@@ -16,7 +16,7 @@ namespace bpp.Helpers
         [EnumMember(Value = "Screening")]
         Screening = 0,
 
-        [EnumMember(Value = "Accpeted")]
+        [EnumMember(Value = "Accepted")]
         Accpeted = 1,
 
         [EnumMember(Value = "Rejected")]
