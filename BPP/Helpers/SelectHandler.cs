@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Beckn.Models;
 using bpp.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using search.Models;
 
@@ -18,17 +19,14 @@ namespace bpp.Helpers
     public class SelectHandler
     {
 
-<<<<<<< Updated upstream
-        public async void SelectAndReply(SelectBody selectBody)
-=======
         static ILogger _logger;
         public SelectHandler(ILoggerFactory loggerfactory)
         {
             _logger = loggerfactory.CreateLogger<SelectHandler>();
         }
         public async Task SelectAndReply(SelectBody selectBody)
->>>>>>> Stashed changes
         {
+
             try
             {
                 Job selectedjob;
@@ -39,8 +37,8 @@ namespace bpp.Helpers
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                Console.WriteLine(e.StackTrace);
+                _logger.LogError(e.Message);
+                _logger.LogError(e.StackTrace);
             }
 
         }
@@ -56,9 +54,9 @@ namespace bpp.Helpers
             {
 
                 var url = Environment.GetEnvironmentVariable("searchbaseUrl")?.ToString();
-                url = url + "/getbyid/" + selectedJObId;
+                url = url + "/jobs/" + selectedJObId;
                 client = new HttpClient();
-                Console.WriteLine(" internal job search at : " + url);
+                _logger.LogInformation(" internal job search at : " + url);
 
                 response = client.GetAsync(url).Result;
                 response.EnsureSuccessStatusCode();
@@ -67,9 +65,9 @@ namespace bpp.Helpers
             }
             catch (Exception e)
             {
-                Console.WriteLine("Search Error");
-                Console.WriteLine(e.Message);
-                Console.WriteLine(response?.Content.ReadAsStringAsync().Result);
+                _logger.LogError("Search Error");
+                _logger.LogError(e.Message);
+                _logger.LogError(response?.Content.ReadAsStringAsync().Result);
 
             }
         }
@@ -137,7 +135,7 @@ namespace bpp.Helpers
             }
             else
             {
-                Console.WriteLine("no job founds from open search. returning error in on select body");
+                _logger.LogInformation("no job founds from open search. returning error in on select body");
                 selectResult.Error = new Error() { Message = "Could not find the selected job in catalog. Please check with BPP" };
 
             }
@@ -152,6 +150,7 @@ namespace bpp.Helpers
             selectedItem.Id = selectedjob.id;
             selectedItem.Descriptor = new Descriptor() { Name = selectedjob.title, LongDesc = selectedjob.description };
             selectedItem.LocationIds = selectedItem.FulfillmentIds = new List<string>();
+            selectedItem.Xinput.Form.Url = Environment.GetEnvironmentVariable("bpp_Xinput_url") + "/formid/" + selectedjob.id;
 
             if (selectedjob.responsibilities?.Count > 0)
             {
@@ -248,19 +247,21 @@ namespace bpp.Helpers
 
                     var postResponse = await postclient.PostAsync(url, data);
 
-                    var result = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine(result);
+                    var result = await postResponse.Content.ReadAsStringAsync();
+                    _logger.LogInformation("response from BAP API for on_select : " + result);
+
+
 
                 }
                 catch (HttpRequestException e)
                 {
-                    Console.WriteLine("\nException Caught!");
-                    Console.WriteLine("Message :{0} ", e.Message);
+                    _logger.LogError("\nException Caught!");
+                    _logger.LogError("Message :{0} ", e.Message);
                 }
             }
             else
             {
-                Console.WriteLine("No job found for given query TID : " + selectBody.Context.TransactionId);
+                _logger.LogInformation("No job found for given query TID : " + selectBody.Context.TransactionId);
             }
         }
         static void SetContext(SelectBody query, OnSelectBody result)
