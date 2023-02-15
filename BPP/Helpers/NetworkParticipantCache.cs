@@ -5,14 +5,17 @@ using System.Text;
 using System.Collections.Generic;
 using bpp.Models;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace bpp.Helpers
 {
     public class NetworkParticipantCache
     {
         List<NetworkParticipant> networkCache;
-        public NetworkParticipantCache()
+        ILogger _logger;
+        public NetworkParticipantCache(ILoggerFactory logfactory)
         {
+            _logger = logfactory.CreateLogger<NetworkParticipant>();
 
             var json = "{}";
             var data = new StringContent(json, Encoding.UTF8, "application/json");
@@ -25,9 +28,9 @@ namespace bpp.Helpers
             networkCache = JsonConvert.DeserializeObject<List<NetworkParticipant>>(result);
             if (networkCache != null)
             {
-                Console.WriteLine("Total participants : " + networkCache.Count);
-                Console.WriteLine("BPPs : " + networkCache.Where(x => x.type == "BPP").Count());
-                Console.WriteLine("BAPs : " + networkCache.Where(x => x.type == "BAP").Count());
+                _logger.LogInformation("Total participants : " + networkCache.Count);
+                _logger.LogInformation("BPPs : " + networkCache.Where(x => x.type == "BPP").Count());
+                _logger.LogInformation("BAPs : " + networkCache.Where(x => x.type == "BAP").Count());
             }
         }
     }

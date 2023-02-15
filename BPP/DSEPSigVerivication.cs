@@ -34,7 +34,7 @@ namespace bpp
 
             catch (Exception e)
             {
-                Console.WriteLine("Error while serializing request Body :" + e.Message);
+                _logger.LogError("Error while serializing request Body :" + e.Message);
             }
 
             // Check if header exists

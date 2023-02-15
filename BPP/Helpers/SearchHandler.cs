@@ -19,7 +19,7 @@ namespace bpp.Helpers
     {
         STDCodeHelper _STDCodeHelper;
         NetworkParticipantCache _networkParticipantCache;
-        ILogger _logger;
+        static ILogger _logger;
         public SearchHandler(STDCodeHelper sTDCodeHelper, NetworkParticipantCache networkParticipantCache, ILoggerFactory logfactory)
         {
             _STDCodeHelper = sTDCodeHelper;
@@ -52,20 +52,20 @@ namespace bpp.Helpers
 
                 var url = query.Context.BapUri + "on_search";
 
-                Console.WriteLine("Rsponding to onsearch API at URL : " + url);
+                _logger.LogInformation("Rsponding to onsearch API at URL : " + url);
                 using var client = new HttpClient();
                 client.Timeout = new TimeSpan(0, 0, 10);
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Signature", AuthUtil.createAuthorizationHeader(json));
                 var response = await client.PostAsync(url, data);
 
                 var result = await response.Content.ReadAsStringAsync();
-                Console.WriteLine("response from BAP API for on_search : " + result);
+                _logger.LogInformation("response from BAP API for on_search : " + result);
 
             }
             catch (HttpRequestException e)
             {
-                Console.WriteLine("\nException Caught!");
-                Console.WriteLine("Message :{0} ", e.Message);
+                _logger.LogInformation("\nException Caught!");
+                _logger.LogInformation("Message :{0} ", e.Message);
             }
 
         }
@@ -100,7 +100,7 @@ namespace bpp.Helpers
                 {
 
                     jobs = jobs.GroupBy(x => x.id).Select(j => j.First()).ToList();
-                    Console.WriteLine("Responding to BAP with jobs. Total Jobs found for current query {0} is {1}", query.Context.TransactionId, jobs.Count);
+                    _logger.LogInformation("Responding to BAP with jobs. Total Jobs found for current query {0} is {1}", query.Context.TransactionId, jobs.Count);
 
                     SetContext(query, result);
                     CreateSearchResult(result, jobs);
@@ -116,9 +116,9 @@ namespace bpp.Helpers
             }
             catch (Exception e)
             {
-                Console.WriteLine("\nException Caught in internal job search!");
-                Console.WriteLine("exception message " + e.Message);
-                Console.WriteLine(e.StackTrace);
+                _logger.LogInformation("\nException Caught in internal job search!");
+                _logger.LogInformation("exception message " + e.Message);
+                _logger.LogInformation(e.StackTrace);
             }
 
             return result;
@@ -132,25 +132,25 @@ namespace bpp.Helpers
                 try
                 {
                     var json = JsonConvert.SerializeObject(searchQuery);
-                    Console.WriteLine("***query : " + json);
+                    _logger.LogInformation("***query : " + json);
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
 
                     var url = Environment.GetEnvironmentVariable("searchUrl")?.ToString();
-                    Console.WriteLine("search URL is : " + url);
+                    _logger.LogInformation("search URL is : " + url);
                     client = new HttpClient();
-                    Console.WriteLine(" internal job search at : " + url);
-                    Console.WriteLine("search with query data : " + JsonConvert.SerializeObject(data));
+                    _logger.LogInformation(" internal job search at : " + url);
+                    _logger.LogInformation("search with query data : " + JsonConvert.SerializeObject(data));
                     response = client.PostAsync(url, data).Result;
                     response.EnsureSuccessStatusCode();
                     jobs = response.Content.ReadAsStringAsync().Result;
                     joblist.AddRange(Newtonsoft.Json.JsonConvert.DeserializeObject<List<Job>>(jobs));
-                    Console.WriteLine("Total Jobs for current search query is {0}: ", joblist.Count);
+                    _logger.LogInformation("Total Jobs for current search query is {0}: ", joblist.Count);
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Search Error");
-                    Console.WriteLine(e.Message);
-                    Console.WriteLine(response?.Content.ReadAsStringAsync().Result);
+                    _logger.LogInformation("Search Error");
+                    _logger.LogInformation(e.Message);
+                    _logger.LogInformation(response?.Content.ReadAsStringAsync().Result);
 
                 }
 
@@ -263,8 +263,8 @@ namespace bpp.Helpers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
-                    Console.WriteLine(e.StackTrace);
+                    _logger.LogInformation(e.Message);
+                    _logger.LogInformation(e.StackTrace);
                 }
             }
         }

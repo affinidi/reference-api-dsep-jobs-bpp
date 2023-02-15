@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Beckn.Models;
 using bpp.Models;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using search.Models;
 
@@ -17,8 +18,10 @@ namespace bpp.Helpers
     {
         string aplicationID = string.Empty;
         string jobId = string.Empty;
-        public ConfirmHandler()
+        static ILogger _logger;
+        public ConfirmHandler(ILoggerFactory logfactory)
         {
+            _logger = logfactory.CreateLogger<ConfirmHandler>();
         }
 
         internal async Task SaveApplication(ConfirmBody body)
@@ -46,7 +49,7 @@ namespace bpp.Helpers
 
                     var json = JsonConvert.SerializeObject(application, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
-                    Console.WriteLine(" application Details : " + json);
+                    _logger.LogInformation(" application Details : " + json);
 
                     var url = Environment.GetEnvironmentVariable("searchbaseUrl")?.ToString();
                     url = url + "/applications";
@@ -56,7 +59,7 @@ namespace bpp.Helpers
                     if (response.IsSuccessStatusCode)
                     {
                         var result = response.Content.ReadAsStringAsync().Result;
-                        Console.WriteLine("ApplicationId is : " + result);
+                        _logger.LogInformation("ApplicationId is : " + result);
 
                         await SendConfirmation(application, body, jobDetails);
                     }
@@ -72,9 +75,9 @@ namespace bpp.Helpers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Error While saving application");
-                    Console.WriteLine(e.Message);
-                    Console.WriteLine(response?.Content.ReadAsStringAsync().Result);
+                    _logger.LogInformation("Error While saving application");
+                    _logger.LogInformation(e.Message);
+                    _logger.LogInformation(response?.Content.ReadAsStringAsync().Result);
 
                 }
 
@@ -96,20 +99,20 @@ namespace bpp.Helpers
             {
                 var json = JsonConvert.SerializeObject(onConfirmBody, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
-                Console.WriteLine("on_confirm data : " + json);
+                _logger.LogInformation("on_confirm data : " + json);
                 var url = body.Context.BapUri + "on_confirm";
                 using var client = new HttpClient();
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Signature", AuthUtil.createAuthorizationHeader(json));
                 var response = await client.PostAsync(url, data);
 
                 var result = await response.Content.ReadAsStringAsync();
-                Console.WriteLine("result for on_confirm  : " + result);
+                _logger.LogInformation("result for on_confirm  : " + result);
 
             }
             catch (HttpRequestException e)
             {
-                Console.WriteLine("Error while sending On_confirm message! : " + e.Message);
-                Console.WriteLine("Message :{0} ", e.StackTrace);
+                _logger.LogInformation("Error while sending On_confirm message! : " + e.Message);
+                _logger.LogInformation("Message :{0} ", e.StackTrace);
             }
         }
 
@@ -180,20 +183,20 @@ namespace bpp.Helpers
             {
                 var json = JsonConvert.SerializeObject(onConfirmBody, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
-                Console.WriteLine("on_confirm data : " + json);
+                _logger.LogInformation("on_confirm data : " + json);
                 var url = body.Context.BapUri + "on_confirm";
                 using var client = new HttpClient();
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Signature", AuthUtil.createAuthorizationHeader(json));
                 var response = await client.PostAsync(url, data);
 
                 var result = await response.Content.ReadAsStringAsync();
-                Console.WriteLine("result for on_confirm : " + result);
+                _logger.LogInformation("result for on_confirm : " + result);
 
             }
             catch (HttpRequestException e)
             {
-                Console.WriteLine("Error while sending On_confirm message! : " + e.Message);
-                Console.WriteLine("Message :{0} ", e.StackTrace);
+                _logger.LogInformation("Error while sending On_confirm message! : " + e.Message);
+                _logger.LogInformation("Message :{0} ", e.StackTrace);
             }
 
         }
@@ -203,7 +206,7 @@ namespace bpp.Helpers
             var url = Environment.GetEnvironmentVariable("searchbaseUrl")?.ToString();
             url = url + "/jobs/" + application.jobid;
 
-            Console.WriteLine(" internal job search for job ID  : " + application.jobid);
+            _logger.LogInformation(" internal job search for job ID  : " + application.jobid);
 
             using var client = new HttpClient();
             var response = client.GetAsync(url).Result;

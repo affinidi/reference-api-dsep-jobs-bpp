@@ -5,6 +5,7 @@ using System.Text;
 using bpp.Models;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -12,8 +13,10 @@ namespace bpp.Helpers
 {
     public class XinputHandler
     {
-        public XinputHandler()
+        ILogger _logger;
+        public XinputHandler(ILoggerFactory loggerfactory)
         {
+            _logger = loggerfactory.CreateLogger<XinputHandler>();
         }
 
         internal string BuildXinput(string id)
@@ -47,7 +50,7 @@ namespace bpp.Helpers
             {
                 var json = JsonConvert.SerializeObject(xinputData, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
-                Console.WriteLine(" Saving Xinput for job id : {0}, XinputFomr id : {1}, {2}", xinputData.jobId, xinputData.xinputFormID, json);
+                _logger.LogInformation(" Saving Xinput for job id : {0}, XinputFomr id : {1}, {2}", xinputData.jobId, xinputData.xinputFormID, json);
 
                 var url = Environment.GetEnvironmentVariable("save_xinput_url")?.ToString();
                 url = url + "/save";
@@ -57,22 +60,22 @@ namespace bpp.Helpers
                 if (response.IsSuccessStatusCode)
                 {
                     var result = response.Content.ReadAsStringAsync().Result;
-                    Console.WriteLine("Saved Xinput data Job id  :  {0}", xinputData.jobId);
+                    _logger.LogInformation("Saved Xinput data Job id  :  {0}", xinputData.jobId);
 
 
                 }
                 else
                 {
-                    Console.WriteLine("Error in saving Xinput data Job id  :  {0}", xinputData.jobId);
-                    Console.WriteLine("Error in saving Xinput data Job id  :  {0}", response.ReasonPhrase);
+                    _logger.LogError("Error in saving Xinput data Job id  :  {0}", xinputData.jobId);
+                    _logger.LogError("Error in saving Xinput data Job id  :  {0}", response.ReasonPhrase);
                 }
 
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error While saving application");
-                Console.WriteLine(e.Message);
-                Console.WriteLine(response?.Content.ReadAsStringAsync().Result);
+                _logger.LogError("Error While saving application");
+                _logger.LogError(e.Message);
+                _logger.LogError(response?.Content.ReadAsStringAsync().Result);
                 throw e;
 
             }

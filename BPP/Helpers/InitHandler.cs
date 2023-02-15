@@ -8,14 +8,17 @@ using System.Text;
 using System.Threading.Tasks;
 using Beckn.Models;
 using bpp.Models;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace bpp.Helpers
 {
     public class InitHandler
     {
-        public InitHandler()
+        static ILogger _logger;
+        public InitHandler(ILoggerFactory logfactory)
         {
+            _logger = logfactory.CreateLogger<InitHandler>();
         }
 
         public async void InitJobApplication(InitBody body)
@@ -36,8 +39,8 @@ namespace bpp.Helpers
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                Console.WriteLine(e.StackTrace);
+                _logger.LogError(e.Message);
+                _logger.LogError(e.StackTrace);
             }
         }
 
@@ -59,7 +62,7 @@ namespace bpp.Helpers
                 var url = Environment.GetEnvironmentVariable("searchbaseUrl")?.ToString();
                 url = url + "/jobs/" + selectedJObId;
                 client = new HttpClient();
-                Console.WriteLine(" internal job search at : " + url);
+                _logger.LogInformation(" internal job search at : " + url);
 
                 response = client.GetAsync(url).Result;
                 response.EnsureSuccessStatusCode();
@@ -68,9 +71,9 @@ namespace bpp.Helpers
             }
             catch (Exception e)
             {
-                Console.WriteLine("Search Error");
-                Console.WriteLine(e.Message);
-                Console.WriteLine(response?.Content.ReadAsStringAsync().Result);
+                _logger.LogError("Search Error");
+                _logger.LogError(e.Message);
+                _logger.LogError(response?.Content.ReadAsStringAsync().Result);
 
             }
         }
@@ -135,7 +138,7 @@ namespace bpp.Helpers
             }
             else
             {
-                Console.WriteLine("no job founds from open search. returning error in on select body");
+                _logger.LogInformation("no job founds from open search. returning error in on select body");
                 selectResult.Error = new Error() { Message = "Could not find the selected job in catalog. Please check with BPP" };
 
             }
@@ -260,18 +263,18 @@ namespace bpp.Helpers
                     var postResponse = await postclient.PostAsync(url, data);
 
                     var result = await postResponse.Content.ReadAsStringAsync();
-                    Console.WriteLine(result);
+                    _logger.LogInformation(result);
 
                 }
                 catch (HttpRequestException e)
                 {
-                    Console.WriteLine("\nException Caught!");
-                    Console.WriteLine("Message :{0} ", e.Message);
+                    _logger.LogError("\nException Caught!");
+                    _logger.LogError("Message :{0} ", e.Message);
                 }
             }
             else
             {
-                Console.WriteLine("No job found for given query TID : " + selectBody.Context.TransactionId);
+                _logger.LogInformation("No job found for given query TID : " + selectBody.Context.TransactionId);
             }
         }
     }
