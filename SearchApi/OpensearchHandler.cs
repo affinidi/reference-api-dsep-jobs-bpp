@@ -94,6 +94,30 @@ namespace search
             return applications;
         }
 
+        internal List<Application> FindApplications(string jobid)
+        {
+            _logger.LogInformation("searching applications for jobID : " + jobid);
+            List<Application> applications = new List<Application>();
+
+            var request = new SearchRequest
+            {
+                From = 0,
+                Size = 100,
+                Query = new MatchQuery() { Field = "jobid", Query = jobid }
+            };
+            var response = _client.Search<Application>(request);
+
+            if (response.IsValid && response.Documents.Count > 0)
+            {
+                applications.AddRange((List<Application>)response.Documents);
+                _logger.LogInformation("Total Applications in system for JOb ID  {0} :  {1} :", jobid, applications.Count);
+            }
+
+            //applications = applications.GroupBy(x => x.jobid).Select(a => a.First()).ToList();
+
+            return applications;
+        }
+
         internal IEnumerable<Job> FindManyWProvider(Query query)
         {
             ISearchResponse<Job> searchResponse = null;

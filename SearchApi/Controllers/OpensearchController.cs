@@ -39,8 +39,12 @@ namespace search.Controllers
         }
 
         [HttpGet]
-        [Route("applications")]
+        [Route("allapplications")]
         public List<Application> GetApplications() => _opensearchHandler.FindApplications();
+
+        [HttpGet]
+        [Route("applications")]
+        public List<Application> GetApplicationForJob(string jobid) => _opensearchHandler.FindApplications(jobid);
 
         [HttpPost]
         [Route("addjob")]
