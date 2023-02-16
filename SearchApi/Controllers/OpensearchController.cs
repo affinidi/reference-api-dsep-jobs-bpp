@@ -51,6 +51,7 @@ namespace search.Controllers
 
         [HttpPost]
         [Route("addjob")]
+        [ValidateAntiForgeryToken]
         public IActionResult Post(Job job)
         {
 
@@ -79,6 +80,7 @@ namespace search.Controllers
 
         [HttpPost]
         [Route("applications")]
+        [ValidateAntiForgeryToken]
         public IActionResult Post([FromBody] Application application)
         {
 

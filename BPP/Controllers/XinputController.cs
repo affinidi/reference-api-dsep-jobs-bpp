@@ -27,8 +27,10 @@ namespace bpp.Controllers
 
         }
 
+
         [HttpPost]
         [Route("submit/{id}")]
+        [ValidateAntiForgeryToken]
         public string SubmitForm(string id, [FromBody] XinputData xinputData)
         {
             _logger.LogInformation("Submission for Xinput form");
