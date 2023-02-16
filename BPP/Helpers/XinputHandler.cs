@@ -22,14 +22,15 @@ namespace bpp.Helpers
         internal string BuildXinput(string id)
         {
             //id input can be used to create JOb specific Xinput, currently its generic TODO: form dynamic Xinput form
-            var xForm = File.ReadAllText("StaticFiles/Xinput.txt");
+            var xForm = File.ReadAllText(BPPConstants.STATIC_FILE_XINPUT_FORM_BASE);
             // This will be the ID given to BAP if they submit form
             // It wil be saved separately with Job ID On Init or confirm with JOb id and form ID
             var XinputFormID = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString();
             var xinputData = new XinputData() { jobId = id, xinputFormID = XinputFormID };
             SaveXinput(xinputData);
-
-            xForm = xForm.Replace("xinputformurl", Environment.GetEnvironmentVariable("bpp_Xinput_url") + "/submit/" + XinputFormID, StringComparison.CurrentCultureIgnoreCase);
+            xForm = xForm.Replace("xinputformurl", Environment.GetEnvironmentVariable(EnvironmentVariables.BPP_XINPUT_URL)
+                + BPPConstants.URL_PATH_XINPUT_SUBMIT_PATH
+                + XinputFormID, StringComparison.CurrentCultureIgnoreCase);
             return xForm;
         }
 
@@ -44,32 +45,26 @@ namespace bpp.Helpers
 
         private void SaveXinput(XinputData xinputData)
         {
-
             HttpResponseMessage response = null;
             try
             {
                 var json = JsonConvert.SerializeObject(xinputData, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-                var data = new StringContent(json, Encoding.UTF8, "application/json");
+                var data = new StringContent(json, Encoding.UTF8, BPPConstants.RESPONSE_MEDIA_TYPE);
                 _logger.LogInformation(" Saving Xinput for job id : {0}, XinputFomr id : {1}, {2}", xinputData.jobId, xinputData.xinputFormID, json);
-
-                var url = Environment.GetEnvironmentVariable("save_xinput_url")?.ToString();
+                var url = Environment.GetEnvironmentVariable(EnvironmentVariables.SAVE_XINPUT_URL)?.ToString();
                 url = url + "/save";
                 using var client = new HttpClient();
-
                 response = client.PostAsync(url, data).Result;
                 if (response.IsSuccessStatusCode)
                 {
                     var result = response.Content.ReadAsStringAsync().Result;
                     _logger.LogInformation("Saved Xinput data Job id  :  {0}", xinputData.jobId);
-
-
                 }
                 else
                 {
                     _logger.LogError("Error in saving Xinput data Job id  :  {0}", xinputData.jobId);
                     _logger.LogError("Error in saving Xinput data Job id  :  {0}", response.ReasonPhrase);
                 }
-
             }
             catch (Exception e)
             {
@@ -77,7 +72,6 @@ namespace bpp.Helpers
                 _logger.LogError(e.Message);
                 _logger.LogError(response?.Content.ReadAsStringAsync().Result);
                 throw e;
-
             }
         }
     }

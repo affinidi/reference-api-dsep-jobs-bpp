@@ -59,8 +59,8 @@ namespace bpp.Helpers
             try
             {
 
-                var url = Environment.GetEnvironmentVariable("searchbaseUrl")?.ToString();
-                url = url + "/jobs/" + selectedJObId;
+                var url = Environment.GetEnvironmentVariable(EnvironmentVariables.SEARCHBASEURL)?.ToString();
+                url = url + BPPConstants.URL_PATH_GET_JOB_DETAIL + selectedJObId;
                 client = new HttpClient();
                 _logger.LogInformation(" internal job search at : " + url);
 
@@ -80,7 +80,7 @@ namespace bpp.Helpers
 
         private static OnInitBody BuildRespons(InitBody selectBody, Job selectedjob)
         {
-            var selectResult = JsonConvert.DeserializeObject<OnInitBody>(File.ReadAllText("StaticFiles/onInit.json"));
+            var selectResult = JsonConvert.DeserializeObject<OnInitBody>(File.ReadAllText(BPPConstants.STATIC_FILE_ON_INIT));
             SetContext(selectBody, selectResult);
 
             if (selectedjob != null)
@@ -148,11 +148,12 @@ namespace bpp.Helpers
         private static Item MapJobtoItem(Job selectedjob)
         {
 
-            var selectedItem = JsonConvert.DeserializeObject<Item>(File.ReadAllText("StaticFiles/ItemAsJob.json"));
+            var selectedItem = JsonConvert.DeserializeObject<Item>(File.ReadAllText(BPPConstants.STATIC_FILE_ITEM_AS_JOB));
             selectedItem.Id = selectedjob.id;
             selectedItem.Descriptor = new Descriptor() { Name = selectedjob.title, LongDesc = selectedjob.description };
             selectedItem.LocationIds = selectedItem.FulfillmentIds = new List<string>();
-            selectedItem.Xinput.Form.Url = Environment.GetEnvironmentVariable("bpp_Xinput_url") + "/formid/" + selectedjob.id;
+            selectedItem.Xinput.Form.Url = Environment.GetEnvironmentVariable(EnvironmentVariables.BPP_XINPUT_URL)
+                                            + BPPConstants.URL_PATH_XINPUT_FORM_PATH + selectedjob.id;
 
             if (selectedjob.responsibilities?.Count > 0)
             {
@@ -240,8 +241,8 @@ namespace bpp.Helpers
             result.Context.MessageId = query.Context.MessageId;
             result.Context.TransactionId = query.Context.TransactionId;
             result.Context.Timestamp = DateTime.Now;
-            result.Context.BppId = Environment.GetEnvironmentVariable("bpp_subscriber_id");
-            result.Context.BppUri = Environment.GetEnvironmentVariable("bpp_url");
+            result.Context.BppId = Environment.GetEnvironmentVariable(EnvironmentVariables.BPP_SUBSCRIBER_ID);
+            result.Context.BppUri = Environment.GetEnvironmentVariable(EnvironmentVariables.BPP_URL);
 
 
         }
@@ -254,11 +255,13 @@ namespace bpp.Helpers
                 {
                     var json = JsonConvert.SerializeObject(selectResult, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
-                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                    var data = new StringContent(json, Encoding.UTF8, BPPConstants.RESPONSE_MEDIA_TYPE);
 
-                    var url = selectResult.Context.BapUri + "on_init";
+                    var url = selectResult.Context.BapUri + BPPConstants.ON_INIT_REPOSNE_URL_PATH;
                     using var postclient = new HttpClient();
-                    postclient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Signature", AuthUtil.createAuthorizationHeader(json));
+                    postclient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(
+                        BPPConstants.SIGNATURE_IDENTIFIER
+                        , AuthUtil.createAuthorizationHeader(json));
 
                     var postResponse = await postclient.PostAsync(url, data);
 

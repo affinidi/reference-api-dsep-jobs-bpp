@@ -47,18 +47,25 @@ namespace bpp.Helpers
 
             try
             {
-                var json = JsonConvert.SerializeObject(on_searchData, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-                var data = new StringContent(json, Encoding.UTF8, "application/json");
-
-                var url = query.Context.BapUri + "on_search";
+                string json = JsonConvert.SerializeObject
+                    (
+                    on_searchData,
+                    Formatting.Indented,
+                    new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }
+                    );
+                StringContent data = new StringContent(json, Encoding.UTF8, BPPConstants.RESPONSE_MEDIA_TYPE);
+                string url = query.Context.BapUri + BPPConstants.ON_SEARCH_REPOSNE_URL_PATH; ;
 
                 _logger.LogInformation("Rsponding to onsearch API at URL : " + url);
                 using var client = new HttpClient();
                 client.Timeout = new TimeSpan(0, 0, 10);
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Signature", AuthUtil.createAuthorizationHeader(json));
-                var response = await client.PostAsync(url, data);
-
-                var result = await response.Content.ReadAsStringAsync();
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue
+                    (
+                    BPPConstants.SIGNATURE_IDENTIFIER,
+                    AuthUtil.createAuthorizationHeader(json)
+                    );
+                HttpResponseMessage response = await client.PostAsync(url, data);
+                string result = await response.Content.ReadAsStringAsync();
                 _logger.LogInformation("response from BAP API for on_search : " + result);
 
             }
@@ -72,7 +79,7 @@ namespace bpp.Helpers
 
         private OnSearchBody searchBppDB(SearchBody query)
         {
-            OnSearchBody result = JsonConvert.DeserializeObject<OnSearchBody>(File.ReadAllText("StaticFiles/OnSearch.json"));
+            OnSearchBody result = JsonConvert.DeserializeObject<OnSearchBody>(File.ReadAllText(BPPConstants.STATIC_FILE_ON_SEARCH));
             try
             {
                 List<Query> allQueries = new List<Query>();
@@ -133,9 +140,9 @@ namespace bpp.Helpers
                 {
                     var json = JsonConvert.SerializeObject(searchQuery);
                     _logger.LogInformation("***query : " + json);
-                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                    var data = new StringContent(json, Encoding.UTF8, BPPConstants.RESPONSE_MEDIA_TYPE);
 
-                    var url = Environment.GetEnvironmentVariable("searchUrl")?.ToString();
+                    var url = Environment.GetEnvironmentVariable(EnvironmentVariables.SEARCHURL)?.ToString();
                     _logger.LogInformation("search URL is : " + url);
                     client = new HttpClient();
                     _logger.LogInformation(" internal job search at : " + url);
@@ -143,7 +150,7 @@ namespace bpp.Helpers
                     response = client.PostAsync(url, data).Result;
                     response.EnsureSuccessStatusCode();
                     jobs = response.Content.ReadAsStringAsync().Result;
-                    joblist.AddRange(Newtonsoft.Json.JsonConvert.DeserializeObject<List<Job>>(jobs));
+                    joblist.AddRange(JsonConvert.DeserializeObject<List<Job>>(jobs));
                     _logger.LogInformation("Total Jobs for current search query is {0}: ", joblist.Count);
                 }
                 catch (Exception e)
@@ -165,8 +172,8 @@ namespace bpp.Helpers
                 result.Context.MessageId = query.Context.MessageId;
                 result.Context.TransactionId = query.Context.TransactionId;
                 result.Context.Timestamp = DateTime.Now;
-                result.Context.BppId = Environment.GetEnvironmentVariable("bpp_subscriber_id");
-                result.Context.BppUri = Environment.GetEnvironmentVariable("bpp_url");
+                result.Context.BppId = Environment.GetEnvironmentVariable(EnvironmentVariables.BPP_SUBSCRIBER_ID);
+                result.Context.BppUri = Environment.GetEnvironmentVariable(EnvironmentVariables.BPP_URL);
 
                 result.Message.Catalog.Providers = new List<Provider>();
             }

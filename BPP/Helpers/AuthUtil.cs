@@ -26,10 +26,9 @@ namespace bpp.Helpers
         {
             SingingString sg = createSigningString((message)); //creates  hashed request details 
             Console.WriteLine("Signing string: " + sg.signing_string);
-            //var base64PrivateKey = Convert.ToBase64String(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("bpp_privatekey")));
-            var signature = signMessage(sg.signing_string, Environment.GetEnvironmentVariable("bpp_privatekey")); // signs the message 
-            var subscriber_id = Environment.GetEnvironmentVariable("bpp_subscriber_id");
-            var unique_key_id = Environment.GetEnvironmentVariable("bpp_unique_key_id");
+            var signature = signMessage(sg.signing_string, Environment.GetEnvironmentVariable(EnvironmentVariables.BPP_PRIVATEKEY.ToString())); // signs the message 
+            var subscriber_id = Environment.GetEnvironmentVariable(EnvironmentVariables.BPP_SUBSCRIBER_ID);
+            var unique_key_id = Environment.GetEnvironmentVariable(EnvironmentVariables.BPP_UNIQUE_KEY_ID);
             //creates header data to be sent as Authorization key 
             string header = "keyId=" + subscriber_id + "|" + unique_key_id + "|" + "ed25519, algorithm = ed25519, created = " + sg.created + ", expires = " + sg.expires + ", headers = (" + sg.created + ") (" + sg.expires + ") digest, signature = " + signature;
             //string header =   $"Signature keyId = " ${subscriber_id}"|"${config.unique_key_id}|ed25519", algorithm = "ed25519", created = "${created}", expires = "${expires}", headers = "(created) (expires) digest", signature = "${signature}"";

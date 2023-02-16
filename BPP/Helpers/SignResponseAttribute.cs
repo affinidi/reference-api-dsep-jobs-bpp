@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Text;
+using bpp;
 using bpp.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -18,7 +19,7 @@ public class SignResponseAttribute : ActionFilterAttribute
             var signature64 = AuthUtil.createAuthorizationHeader(json);  //Convert.ToBase64String(signature);
             Console.WriteLine(" adding Authorization headers");
             context.HttpContext.Response.Headers.Add("authorization", signature64);
-            context.HttpContext.Response.Headers.Add("Content-Type", "application/json");
+            context.HttpContext.Response.Headers.Add("Content-Type", BPPConstants.RESPONSE_MEDIA_TYPE);
         }
     }
 }

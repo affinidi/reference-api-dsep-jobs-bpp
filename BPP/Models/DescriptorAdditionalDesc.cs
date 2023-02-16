@@ -38,7 +38,7 @@ namespace bpp.Models
             /// <summary>
             /// Enum ApplicationjsonEnum for application/json
             /// </summary>
-            [EnumMember(Value = "application/json")]
+            [EnumMember(Value = BPPConstants.RESPONSE_MEDIA_TYPE)]
             ApplicationjsonEnum = 2
         }
 

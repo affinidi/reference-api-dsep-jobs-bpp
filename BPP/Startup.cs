@@ -16,6 +16,8 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using bpp.Filters;
 using bpp.Security;
 using bpp.Helpers;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace bpp
 {
@@ -106,6 +108,7 @@ namespace bpp
         /// <param name="loggerFactory"></param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
+            CheckEnvVariables();
 
             app.UseRouting();
             app.UseMiddleware<DSEPSigVerification>();
@@ -139,6 +142,30 @@ namespace bpp
                 app.UseExceptionHandler("/Error");
 
                 app.UseHsts();
+            }
+        }
+
+        private static void CheckEnvVariables()
+        {
+            var missingVariables = new List<string>();
+
+            // Check each environment variable and add its name to the missingVariables list if it's not set
+            foreach (var fieldName in typeof(EnvironmentVariables).GetFields())
+            {
+                var value = (string)fieldName.GetValue(null);
+                var environmentVariable = Environment.GetEnvironmentVariable(value);
+
+                if (string.IsNullOrEmpty(environmentVariable))
+                {
+                    missingVariables.Add(value);
+                }
+            }
+
+            // If there are missing environment variables, stop the API
+            if (missingVariables.Any())
+            {
+                var missingVariablesMessage = string.Join(", ", missingVariables);
+                throw new Exception($"The following environment variables are not set: {missingVariablesMessage}");
             }
         }
     }

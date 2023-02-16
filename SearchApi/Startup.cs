@@ -45,6 +45,8 @@ namespace search
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            CheckEnvVariables();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -61,6 +63,30 @@ namespace search
             {
                 endpoints.MapControllers();
             });
+        }
+
+        private static void CheckEnvVariables()
+        {
+            var missingVariables = new List<string>();
+
+            // Check each environment variable and add its name to the missingVariables list if it's not set
+            foreach (var fieldName in typeof(EnvironmentVariables).GetFields())
+            {
+                var value = (string)fieldName.GetValue(null);
+                var environmentVariable = Environment.GetEnvironmentVariable(value);
+
+                if (string.IsNullOrEmpty(environmentVariable))
+                {
+                    missingVariables.Add(value);
+                }
+            }
+
+            // If there are missing environment variables, stop the API
+            if (missingVariables.Any())
+            {
+                var missingVariablesMessage = string.Join(", ", missingVariables);
+                throw new Exception($"The following environment variables are not set: {missingVariablesMessage}");
+            }
         }
     }
 }
