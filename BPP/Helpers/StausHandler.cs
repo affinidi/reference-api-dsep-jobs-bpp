@@ -26,16 +26,14 @@ namespace bpp.Helpers
             _logger = loggerfactory.CreateLogger<StausHandler>();
         }
 
-        internal void SendStatus(StatusBody body)
+        public async Task SendStatus(StatusBody body)
         {
             try
             {
-
-
                 _statusBody = body;
                 string applicationId = body.Message.OrderId;
                 var applicationDetails = GetApplication(applicationId);
-                RespondOnStatus(applicationDetails);
+                await RespondOnStatus(applicationDetails);
             }
             catch (Exception e)
             {
@@ -44,13 +42,11 @@ namespace bpp.Helpers
             }
         }
 
-
-
         private Application GetApplication(string applicationId)
         {
             //var application = new Application("dummmy");
-            var url = Environment.GetEnvironmentVariable("searchbaseUrl")?.ToString();
-            url = url + "/applications/" + applicationId;
+            var url = Environment.GetEnvironmentVariable(EnvironmentVariables.SEARCHBASEURL)?.ToString();
+            url = url + BPPConstants.URL_PATH_SAVE_APPLICATION + applicationId;
 
             _logger.LogInformation(" internal search for Application ID  : " + applicationId);
 
@@ -62,16 +58,16 @@ namespace bpp.Helpers
             return selectedApplication;
         }
 
-        private void RespondOnStatus(Application applicationDetails)
+        private async Task RespondOnStatus(Application applicationDetails)
         {
-            var onStatusBody = JsonConvert.DeserializeObject<OnConfirmBody>(File.ReadAllText("StaticFiles/OnStatus.json"));
+            var onStatusBody = JsonConvert.DeserializeObject<OnConfirmBody>(File.ReadAllText(BPPConstants.STATIC_FILE_ON_STATUS));
             onStatusBody.Context.MessageId = _statusBody.Context.MessageId;
             onStatusBody.Context.TransactionId = _statusBody.Context.TransactionId;
             onStatusBody.Context.Timestamp = DateTime.Now;
             onStatusBody.Context.BapId = _statusBody.Context.BapId;
             onStatusBody.Context.BapUri = _statusBody.Context.BapUri;
-            onStatusBody.Context.BppId = Environment.GetEnvironmentVariable("bpp_subscriber_id");
-            onStatusBody.Context.BppUri = Environment.GetEnvironmentVariable("bpp_url");
+            onStatusBody.Context.BppId = Environment.GetEnvironmentVariable(EnvironmentVariables.BPP_SUBSCRIBER_ID);
+            onStatusBody.Context.BppUri = Environment.GetEnvironmentVariable(EnvironmentVariables.BPP_URL);
             onStatusBody.Message.Order.Id = applicationDetails.id;
             onStatusBody.Message.Order.Items.Add(GetJobDetails(applicationDetails.jobid));
             onStatusBody.Message.Order.Fulfillments.Add(GetFulfillment(applicationDetails));
@@ -83,13 +79,17 @@ namespace bpp.Helpers
                 {
                     var json = JsonConvert.SerializeObject(onStatusBody, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
-                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                    var data = new StringContent(json, Encoding.UTF8, BPPConstants.RESPONSE_MEDIA_TYPE);
 
-                    var url = _statusBody.Context.BapUri + "on_status";
+                    var url = _statusBody.Context.BapUri + BPPConstants.ON_STATUS_REPOSNE_URL_PATH;
                     using var postclient = new HttpClient();
-                    postclient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Signature", AuthUtil.createAuthorizationHeader(json));
+                    postclient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue
+                        (
+                        BPPConstants.SIGNATURE_IDENTIFIER,
+                        AuthUtil.createAuthorizationHeader(json)
+                        );
 
-                    var postResponse = postclient.PostAsync(url, data).Result;
+                    var postResponse = await postclient.PostAsync(url, data);
 
                     var result = postResponse.Content.ReadAsStringAsync().Result;
                     _logger.LogInformation("On_status call result: " + result);
@@ -149,8 +149,7 @@ namespace bpp.Helpers
 
         private Item MapJobToItem(Job job)
         {
-            int locId = 0;
-            var selectedItem = JsonConvert.DeserializeObject<Item>(File.ReadAllText("StaticFiles/ItemAsJob.json"));
+            var selectedItem = JsonConvert.DeserializeObject<Item>(File.ReadAllText(BPPConstants.STATIC_FILE_ITEM_AS_JOB));
             selectedItem.Id = job.id;
             selectedItem.Descriptor = new Descriptor() { Name = job.title, LongDesc = job.description };
 
@@ -173,8 +172,8 @@ namespace bpp.Helpers
 
         private Job FetchJob(string jobid)
         {
-            var url = Environment.GetEnvironmentVariable("searchbaseUrl")?.ToString();
-            url = url + "/jobs/" + jobid;
+            var url = Environment.GetEnvironmentVariable(EnvironmentVariables.SEARCHBASEURL)?.ToString();
+            url = url + BPPConstants.URL_PATH_GET_JOB_DETAIL + jobid;
 
             _logger.LogInformation(" internal job search for job ID  : " + jobid);
 

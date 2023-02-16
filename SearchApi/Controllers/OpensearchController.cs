@@ -52,9 +52,6 @@ namespace search.Controllers
         [Route("addjob")]
         public IActionResult Post(Job job)
         {
-            // var jobId = System.Guid.NewGuid().ToString();
-            //var json = JsonConvert.SerializeObject(job);
-
 
             job.id = CreateMD5(JsonConvert.SerializeObject(job));
             var result = _opensearchHandler.SaveDoc(job);

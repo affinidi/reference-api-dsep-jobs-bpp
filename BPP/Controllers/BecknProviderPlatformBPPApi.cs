@@ -1,15 +1,6 @@
-
-using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using Swashbuckle.AspNetCore.SwaggerGen;
-using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations;
 using bpp.Attributes;
-using bpp.Security;
-using Microsoft.AspNetCore.Authorization;
-
 using bpp.Helpers;
 using System.Threading.Tasks;
 using Beckn.Models;
@@ -28,19 +19,19 @@ namespace bpp.Controllers
         private SelectHandler _selectHandler;
         private ConfirmHandler _confirmHandler;
         private StausHandler _stausHandler;
-        private InitHandler _InitHandler;
+        private InitHandler _initHandler;
 
         public BecknProviderPlatformBPPApiController(SearchHandler searchHandler,
-            SelectHandler selectHandler,
-            ConfirmHandler confirmHandler,
-            StausHandler stausHandler,
-            InitHandler initHandler)
+           SelectHandler selectHandler,
+           ConfirmHandler confirmHandler,
+           StausHandler stausHandler,
+           InitHandler initHandler)
         {
             _searchHandler = searchHandler;
             _selectHandler = selectHandler;
             _confirmHandler = confirmHandler;
             _stausHandler = stausHandler;
-            _InitHandler = initHandler;
+            _initHandler = initHandler;
         }
 
 
@@ -52,17 +43,14 @@ namespace bpp.Controllers
         /// <response code="200">Acknowledgement of message received</response>
         [HttpPost]
         [Route("/search")]
-        //[Authorize(AuthenticationSchemes = ApiKeyAuthenticationHandler.SchemeName)]
-        //[ValidateModelState]
-        // [SignResponse]
+        [ValidateModelState]
         [SwaggerOperation("SearchPost")]
         // [SwaggerResponse(statusCode: 200, type: typeof(InlineResponse200), description: "Acknowledgement of message received")]
         public virtual IActionResult SearchPost([FromBody] SearchBody body)
         {
-
             Task.Run(() =>
            {
-               _searchHandler.SearchAndReply(body);
+               _ = _searchHandler.SearchAndReply(body);
            }).ConfigureAwait(false);
 
             var response = new Ack() { Status = Ack.StatusEnum.ACKEnum };
@@ -77,7 +65,6 @@ namespace bpp.Controllers
         /// <response code="200">Acknowledgement of message received</response>
         [HttpPost]
         [Route("/select")]
-
         [ValidateModelState]
         [SwaggerOperation("SelectPost")]
         //[SwaggerResponse(statusCode: 200, type: typeof(InlineResponse200), description: "Acknowledgement of message received")]
@@ -86,8 +73,9 @@ namespace bpp.Controllers
 
             Task.Run(() =>
             {
-                _selectHandler.SelectAndReply(body);
+                _ = _selectHandler.SelectAndReply(body);
             }).ConfigureAwait(false);
+
 
 
             var response = new Ack() { Status = Ack.StatusEnum.ACKEnum };
@@ -96,16 +84,17 @@ namespace bpp.Controllers
 
         [HttpPost]
         [Route("/confirm")]
-
         [ValidateModelState]
         [SwaggerOperation("ConfirmPost")]
         //[SwaggerResponse(statusCode: 200, type: typeof(InlineResponse200), description: "Acknowledgement of message received")]
         public virtual IActionResult ConfirmPost([FromBody] ConfirmBody body)
         {
+
             Task.Run(() =>
             {
-                _confirmHandler.SaveApplication(body);
+                _ = _confirmHandler.SaveApplication(body);
             }).ConfigureAwait(false);
+
 
 
             var response = new Ack() { Status = Ack.StatusEnum.ACKEnum };
@@ -116,22 +105,18 @@ namespace bpp.Controllers
         /// 
         /// </summary>
         /// <remarks>Initialize an order by providing billing and/or shipping details</remarks>
-        /// <param name = "body" > TODO </ param >
-        /// < response code="200">Acknowledgement of message received</response>
+        /// <param name = "body" ></param>
+        /// <response code="200">Acknowledgement of message received</response>
         [HttpPost]
         [Route("/init")]
-        // [Authorize(AuthenticationSchemes = ApiKeyAuthenticationHandler.SchemeName)]
-        // [ValidateModelState]
+        [ValidateModelState]
         [SwaggerOperation("InitPost")]
         //[SwaggerResponse(statusCode: 200, type: typeof(InlineResponse200), description: "Acknowledgement of message received")]
         public virtual IActionResult InitPost([FromBody] InitBody body)
         {
-            //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(200, default(InlineResponse200));
-
             Task.Run(() =>
             {
-                _InitHandler.InitJobApplication(body);
+                _ = _initHandler.InitJobApplication(body);
             }).ConfigureAwait(false);
 
             var response = new Ack() { Status = Ack.StatusEnum.ACKEnum };
@@ -143,30 +128,26 @@ namespace bpp.Controllers
         /// 
         /// </summary>
         /// <remarks>Fetch the latest order object</remarks>
-        /// <param name="body">TODO</param>
+        /// <param name="body"></param>
         /// <response code="200">Acknowledgement of message received</response>
         [HttpPost]
         [Route("/status")]
-        //[Authorize(AuthenticationSchemes = ApiKeyAuthenticationHandler.SchemeName)]
-        //[ValidateModelState]
+        [ValidateModelState]
         [SwaggerOperation("StatusPost")]
         //[SwaggerResponse(statusCode: 200, type: typeof(InlineResponse200), description: "Acknowledgement of message received")]
         public virtual IActionResult StatusPost([FromBody] StatusBody body)
         {
+
             Task.Run(() =>
             {
-                _stausHandler.SendStatus(body);
+                _ = _stausHandler.SendStatus(body);
             }).ConfigureAwait(false);
+
 
 
             var response = new Ack() { Status = Ack.StatusEnum.ACKEnum };
             return new ObjectResult(response);
         }
-
-
-
-
-
 
 
     }

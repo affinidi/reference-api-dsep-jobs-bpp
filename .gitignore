@@ -3,7 +3,7 @@ BAP/bin/Debug/netcoreapp3.1/appsettings.Development.json
 BAP/bin/Debug/netcoreapp3.1/appsettings.json
 BAP/bin/Debug/netcoreapp3.1/BAP
 BAP/bin/Debug/netcoreapp3.1/BAP.deps.json
-BAP/bin/Debug/netcoreapp3.1/BAP.dll
+BAP/bin/*
 BAP/bin/Debug/netcoreapp3.1/BAP.pdb
 BAP/bin/Debug/netcoreapp3.1/BAP.runtimeconfig.dev.json
 BAP/bin/Debug/netcoreapp3.1/BAP.runtimeconfig.json
@@ -29,3 +29,11 @@ SearchApi/obj/project.assets.json
 SearchApi/obj/project.nuget.cache
 *.dll
 *.dll
+SearchApi/obj/*
+SearchApi/bin/*
+.vs/DSEP/xs/project-cache/*
+SearchApi/Properties/launchSettings.json
+SearchApi/Properties/*
+
+SearchApi/Properties/launchSettings.json
+SearchApi/obj/Debug/*

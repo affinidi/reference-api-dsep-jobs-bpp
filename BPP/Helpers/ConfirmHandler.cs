@@ -48,11 +48,11 @@ namespace bpp.Helpers
                     var jobDetails = SetJobTitle(application);
 
                     var json = JsonConvert.SerializeObject(application, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                    var data = new StringContent(json, Encoding.UTF8, BPPConstants.RESPONSE_MEDIA_TYPE);
                     _logger.LogInformation(" application Details : " + json);
 
-                    var url = Environment.GetEnvironmentVariable("searchbaseUrl")?.ToString();
-                    url = url + "/applications";
+                    var url = Environment.GetEnvironmentVariable(EnvironmentVariables.SEARCHBASEURL)?.ToString();
+                    url = url + BPPConstants.URL_PATH_SAVE_APPLICATION;
                     using var client = new HttpClient();
 
                     response = client.PostAsync(url, data).Result;
@@ -87,7 +87,7 @@ namespace bpp.Helpers
 
         private static async Task SendError(ConfirmBody body)
         {
-            var onConfirmBody = JsonConvert.DeserializeObject<OnConfirmBody>(File.ReadAllText("StaticFiles/OnConfirmBody.json"));
+            var onConfirmBody = JsonConvert.DeserializeObject<OnConfirmBody>(File.ReadAllText(BPPConstants.STATIC_FILE_ON_CONFIRM));
             onConfirmBody.Context.MessageId = body.Context.MessageId;
             onConfirmBody.Context.TransactionId = body.Context.TransactionId;
             onConfirmBody.Context.Timestamp = DateTime.Now;
@@ -97,14 +97,18 @@ namespace bpp.Helpers
 
             try
             {
-                var json = JsonConvert.SerializeObject(onConfirmBody, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-                var data = new StringContent(json, Encoding.UTF8, "application/json");
+                var json = JsonConvert.SerializeObject(onConfirmBody, Formatting.Indented, new JsonSerializerSettings
+                { NullValueHandling = NullValueHandling.Ignore });
+                var data = new StringContent(json, Encoding.UTF8, BPPConstants.RESPONSE_MEDIA_TYPE);
                 _logger.LogInformation("on_confirm data : " + json);
-                var url = body.Context.BapUri + "on_confirm";
+                var url = body.Context.BapUri + BPPConstants.ON_CONFIRM_REPOSNE_URL_PATH;
                 using var client = new HttpClient();
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Signature", AuthUtil.createAuthorizationHeader(json));
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue
+                    (
+                    BPPConstants.SIGNATURE_IDENTIFIER,
+                    AuthUtil.createAuthorizationHeader(json)
+                    );
                 var response = await client.PostAsync(url, data);
-
                 var result = await response.Content.ReadAsStringAsync();
                 _logger.LogInformation("result for on_confirm  : " + result);
 
@@ -121,14 +125,14 @@ namespace bpp.Helpers
             int locid = 0;
             int fulid = 0;
 
-            var onConfirmBody = JsonConvert.DeserializeObject<OnConfirmBody>(File.ReadAllText("StaticFiles/OnConfirmBody.json"));
+            var onConfirmBody = JsonConvert.DeserializeObject<OnConfirmBody>(File.ReadAllText(BPPConstants.STATIC_FILE_ON_CONFIRM));
             onConfirmBody.Context.MessageId = body.Context.MessageId;
             onConfirmBody.Context.TransactionId = body.Context.TransactionId;
             onConfirmBody.Context.Timestamp = DateTime.Now;
             onConfirmBody.Context.BapId = body.Context.BapId;
             onConfirmBody.Context.BapUri = body.Context.BapUri;
-            onConfirmBody.Context.BppId = Environment.GetEnvironmentVariable("bpp_subscriber_id");
-            onConfirmBody.Context.BppUri = Environment.GetEnvironmentVariable("bpp_url");
+            onConfirmBody.Context.BppId = Environment.GetEnvironmentVariable(EnvironmentVariables.BPP_SUBSCRIBER_ID);
+            onConfirmBody.Context.BppUri = Environment.GetEnvironmentVariable(EnvironmentVariables.BPP_URL);
             onConfirmBody.Message.Order.Id = application.id;
             onConfirmBody.Message.Order.Items.Add(MapJobtoItem(jobDetails));
             var selectedItem = onConfirmBody.Message.Order.Items.First();
@@ -182,13 +186,15 @@ namespace bpp.Helpers
             try
             {
                 var json = JsonConvert.SerializeObject(onConfirmBody, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-                var data = new StringContent(json, Encoding.UTF8, "application/json");
+                var data = new StringContent(json, Encoding.UTF8, BPPConstants.RESPONSE_MEDIA_TYPE);
                 _logger.LogInformation("on_confirm data : " + json);
-                var url = body.Context.BapUri + "on_confirm";
+                var url = body.Context.BapUri + BPPConstants.ON_CONFIRM_REPOSNE_URL_PATH;
                 using var client = new HttpClient();
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Signature", AuthUtil.createAuthorizationHeader(json));
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue
+                    (BPPConstants.SIGNATURE_IDENTIFIER,
+                    AuthUtil.createAuthorizationHeader(json)
+                    );
                 var response = await client.PostAsync(url, data);
-
                 var result = await response.Content.ReadAsStringAsync();
                 _logger.LogInformation("result for on_confirm : " + result);
 
@@ -203,8 +209,8 @@ namespace bpp.Helpers
 
         private static Job SetJobTitle(Application application)
         {
-            var url = Environment.GetEnvironmentVariable("searchbaseUrl")?.ToString();
-            url = url + "/jobs/" + application.jobid;
+            var url = Environment.GetEnvironmentVariable(EnvironmentVariables.SEARCHBASEURL)?.ToString();
+            url = url + BPPConstants.URL_PATH_GET_JOB_DETAIL + application.jobid;
 
             _logger.LogInformation(" internal job search for job ID  : " + application.jobid);
 
@@ -220,7 +226,7 @@ namespace bpp.Helpers
         private static Item MapJobtoItem(Job selectedjob)
         {
 
-            var selectedItem = JsonConvert.DeserializeObject<Item>(File.ReadAllText("StaticFiles/ItemAsJob.json"));
+            var selectedItem = JsonConvert.DeserializeObject<Item>(File.ReadAllText(BPPConstants.STATIC_FILE_ITEM_AS_JOB));
             selectedItem.Id = selectedjob.id;
             selectedItem.Descriptor = new Descriptor() { Name = selectedjob.title, LongDesc = selectedjob.description };
             selectedItem.LocationIds = selectedItem.FulfillmentIds = new List<string>();

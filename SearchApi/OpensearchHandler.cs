@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Net.Security;
 using System.Security;
 using System.Security.Cryptography.X509Certificates;
-using System.Security.Policy;
-using System.Text;
 using bpp.Helpers;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using OpenSearch.Client;
 using search.Models;
 
@@ -23,30 +17,17 @@ namespace search
     {
         OpenSearchClient _client;
         string _opensearchBaseUrl;
-        string _openSearchPutJobIndex;
-        string _openSearchGetJobUrl;
-        string _openSearchPutapplicationIndex;
-        string _openSearchGettapplicationUrl;
         ILogger _logger;
         public OpensearchHandler(ILoggerFactory logfactory)
         {
-            _opensearchBaseUrl = Environment.GetEnvironmentVariable("opensearchBaseUrl")?.ToString();
-            _openSearchPutJobIndex = Environment.GetEnvironmentVariable("openSearchPutIndex")?.ToString();
-            _openSearchGetJobUrl = Environment.GetEnvironmentVariable("_openSearchGetJobUrl")?.ToString();
-            _openSearchPutapplicationIndex = Environment.GetEnvironmentVariable("openSearchPutapplicationIndex")?.ToString();
-            _openSearchGettapplicationUrl = Environment.GetEnvironmentVariable("openSearchGettapplicationUrl")?.ToString();
-
-
+            _opensearchBaseUrl = Environment.GetEnvironmentVariable(EnvironmentVariables.OPENSEARCHBASEURL)?.ToString();
             var uri = new UriBuilder(_opensearchBaseUrl).Uri;
 
-            var user = Environment.GetEnvironmentVariable("user")?.ToString();
-            SecureString secureString = new NetworkCredential("", Environment.GetEnvironmentVariable("secure")?.ToString()).SecurePassword;
+            var user = Environment.GetEnvironmentVariable(EnvironmentVariables.USER)?.ToString();
+            SecureString secureString = new NetworkCredential("", Environment.GetEnvironmentVariable(EnvironmentVariables.SECURE)?.ToString()).SecurePassword;
             var config = new ConnectionSettings(uri)
                 .BasicAuthentication(user, secureString)
                 .ServerCertificateValidationCallback(delegate (object o, X509Certificate certificate, X509Chain arg3, SslPolicyErrors arg4) { return true; });
-
-
-
             _client = new OpenSearchClient(config);
             _logger = logfactory.CreateLogger<OpensearchHandler>();
 
@@ -57,7 +38,7 @@ namespace search
         internal Job Find(string id)
         {
             _logger.LogInformation("select job request for ID : " + id);
-            var searchResponse = _client.Get<Job>(id, idx => idx.Index("jobs"));
+            var searchResponse = _client.Get<Job>(id, idx => idx.Index(Constant.INDEX_JOB));
 
             return (Job)(searchResponse.IsValid ? ((Job)searchResponse.Source) : null);
 
@@ -67,7 +48,7 @@ namespace search
         internal Application FindApplication(string id)
         {
             _logger.LogInformation("select application for ID : " + id);
-            var searchResponse = _client.Get<Application>(id, idx => idx.Index("applications"));
+            var searchResponse = _client.Get<Application>(id, idx => idx.Index(Constant.INDEX_APPLICATION));
 
             return (Application)(searchResponse.IsValid ? ((Application)searchResponse.Source) : null);
         }
@@ -216,14 +197,14 @@ namespace search
         internal string SaveDoc(Job job)
         {
             _logger.LogInformation("Saving posted job");
-            var response = _client.Index(job, i => i.Index("jobs").Id(job.id));
+            var response = _client.Index(job, i => i.Index(Constant.INDEX_JOB).Id(job.id));
             return response.IsValid ? response.Id : response.ApiCall?.OriginalException?.ToString();
         }
 
         internal object SaveDoc(Application application)
         {
             _logger.LogInformation("Saving Application : " + application.id);
-            var response = _client.Index(application, i => i.Index("applications").Id(application.id));
+            var response = _client.Index(application, i => i.Index(Constant.INDEX_APPLICATION).Id(application.id));
             return response.IsValid ? response.Id : response.ApiCall?.OriginalException?.ToString();
             //return new Object();
         }
@@ -231,7 +212,7 @@ namespace search
         internal string SaveXinput(XinputData xinputData)
         {
             _logger.LogInformation("Saving posted Xinput Data");
-            var response = _client.Index(xinputData, i => i.Index("xinputs").Id(xinputData.xinputFormID));
+            var response = _client.Index(xinputData, i => i.Index(Constant.INDEX_XINPUT).Id(xinputData.xinputFormID));
             return response.IsValid ? response.Id : response.ApiCall?.OriginalException?.ToString();
         }
 

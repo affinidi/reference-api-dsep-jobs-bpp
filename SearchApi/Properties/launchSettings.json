@@ -24,9 +24,9 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "jobsDirectory": "/Volumes/Data-disk/jsonFile",
-        "user": "admin",
-        "secure": "admin",
-        "opensearchBaseUrl": "https://localhost:9200"
+        "user": "dsepmasteruser",
+        "secure": "Dsep@opensearch1",
+        "opensearchBaseUrl": "https://43.205.255.16"
       }
     }
   }

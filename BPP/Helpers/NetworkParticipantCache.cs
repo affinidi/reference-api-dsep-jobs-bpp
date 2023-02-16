@@ -18,7 +18,7 @@ namespace bpp.Helpers
             _logger = logfactory.CreateLogger<NetworkParticipant>();
 
             var json = "{}";
-            var data = new StringContent(json, Encoding.UTF8, "application/json");
+            var data = new StringContent(json, Encoding.UTF8, BPPConstants.RESPONSE_MEDIA_TYPE);
 
             var url = "https://registry.becknprotocol.io/subscribers/lookup";
             using var client = new HttpClient();
