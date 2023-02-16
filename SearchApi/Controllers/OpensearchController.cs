@@ -90,6 +90,7 @@ namespace search.Controllers
 
         [HttpPost]
         [Route("jobs")]
+        [ValidateAntiForgeryToken]
         public IEnumerable<Job> Find(Query query)
         {
             _logger.LogInformation("New Request for search");
