@@ -29,6 +29,7 @@ namespace BAP.Controllers
         [EnableCors]
         [HttpPost]
         [Route("searchdsep")]
+        [ValidateAntiForgeryToken]
         public string SearchBPP(EUAPayload payload)
         {
             return _dataRetrievalService.SearchOnBPP(payload);
@@ -37,6 +38,7 @@ namespace BAP.Controllers
         [EnableCors]
         [HttpPost]
         [Route("selectdsep")]
+        [ValidateAntiForgeryToken]
         public string SelectBPP(EUAPayload payload)
         {
             return _dataRetrievalService.SelectOnBPP(payload);
@@ -45,6 +47,7 @@ namespace BAP.Controllers
         [EnableCors]
         [HttpPost]
         [Route("confirmDsep")]
+        [ValidateAntiForgeryToken]
         public string ConfirmDsep(EUAPayload payload)
         {
             return _dataRetrievalService.ConfirmOnDsep(payload);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using bpp.Helpers;
 using Microsoft.AspNetCore.Mvc;
@@ -50,35 +51,36 @@ namespace search.Controllers
 
         [HttpPost]
         [Route("addjob")]
+        [ValidateAntiForgeryToken]
         public IActionResult Post(Job job)
         {
 
-            job.id = CreateMD5(JsonConvert.SerializeObject(job));
+            job.id = ComputeSha256Hash(JsonConvert.SerializeObject(job));
             var result = _opensearchHandler.SaveDoc(job);
             return Ok(result);
         }
-
-        private static string CreateMD5(string input)
+        static string ComputeSha256Hash(string rawData)
         {
-            // Use input string to calculate MD5 hash
-            using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
+            // Create a SHA256   
+            using (SHA256 sha256Hash = SHA256.Create())
             {
-                byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
-                byte[] hashBytes = md5.ComputeHash(inputBytes);
+                // ComputeHash - returns byte array  
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
 
-                //return Convert.ToHexString(hashBytes); // .NET 5 +
-
-                //Convert the byte array to hexadecimal string prior to.NET 5
-                StringBuilder sb = new System.Text.StringBuilder();
-                for (int i = 0; i < hashBytes.Length; i++)
+                // Convert byte array to a string   
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < bytes.Length; i++)
                 {
-                    sb.Append(hashBytes[i].ToString("X2"));
+                    builder.Append(bytes[i].ToString("x2"));
                 }
-                return sb.ToString();
+                return builder.ToString();
             }
         }
+
+
         [HttpPost]
         [Route("applications")]
+        [ValidateAntiForgeryToken]
         public IActionResult Post([FromBody] Application application)
         {
 
@@ -88,6 +90,7 @@ namespace search.Controllers
 
         [HttpPost]
         [Route("jobs")]
+        [ValidateAntiForgeryToken]
         public IEnumerable<Job> Find(Query query)
         {
             _logger.LogInformation("New Request for search");
