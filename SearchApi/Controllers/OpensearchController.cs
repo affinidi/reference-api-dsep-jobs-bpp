@@ -51,7 +51,7 @@ namespace search.Controllers
 
         [HttpPost]
         [Route("addjob")]
-        [ValidateAntiForgeryToken]
+        // [ValidateAntiForgeryToken]
         public IActionResult Post(Job job)
         {
 
@@ -80,7 +80,7 @@ namespace search.Controllers
 
         [HttpPost]
         [Route("applications")]
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         public IActionResult Post([FromBody] Application application)
         {
 
@@ -90,7 +90,7 @@ namespace search.Controllers
 
         [HttpPost]
         [Route("jobs")]
-        [ValidateAntiForgeryToken]
+        // [ValidateAntiForgeryToken]
         public IEnumerable<Job> Find(Query query)
         {
             _logger.LogInformation("New Request for search");

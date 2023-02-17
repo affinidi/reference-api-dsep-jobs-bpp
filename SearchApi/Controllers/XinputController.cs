@@ -17,7 +17,7 @@ namespace search.Controllers
 
         [HttpPost]
         [Route("save")]
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         public IActionResult Post(XinputData xinputData)
         {
             if (string.IsNullOrEmpty(xinputData.xinputFormID))
