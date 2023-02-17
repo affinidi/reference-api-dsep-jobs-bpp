@@ -18,7 +18,7 @@ namespace bpp
         public const string ON_STATUS_REPOSNE_URL_PATH = "on_status";
         public const string RESPONSE_MEDIA_TYPE = "application/json";
 
-        public const string URL_PATH_SAVE_APPLICATION = "/applications";
+        public const string URL_PATH_SAVE_APPLICATION = "/applications/";
         public const string URL_PATH_GET_JOB_DETAIL = "/jobs/";
         public const string URL_PATH_XINPUT_FORM_PATH = "/formid/";
         public const string URL_PATH_XINPUT_SUBMIT_PATH = "/submit/";
