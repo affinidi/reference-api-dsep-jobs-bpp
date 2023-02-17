@@ -37,3 +37,13 @@ SearchApi/Properties/*
 
 SearchApi/Properties/launchSettings.json
 SearchApi/obj/Debug/*
+.vs/DSEP/xs/project-cache/BAP-Debug.json
+.vs/DSEP/xs/project-cache/bpp-Debug.json
+.vs/DSEP/xs/project-cache/search-Debug.json
+.vs/DSEP/xs/UserPrefs.xml
+BAP/obj/Debug/netcoreapp3.1/BAP.assets.cache
+BAP/obj/Debug/netcoreapp3.1/BAP.GeneratedMSBuildEditorConfig.editorconfig
+SearchApi/obj/project.assets.json
+SearchApi/obj/project.nuget.cache
+SearchApi/obj/search.csproj.nuget.dgspec.json
+SearchApi/Properties/launchSettings.json

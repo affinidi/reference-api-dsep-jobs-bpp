@@ -44,7 +44,7 @@ namespace bpp.Controllers
         [HttpPost]
         [Route("/search")]
         [ValidateModelState]
-        [ValidateAntiForgeryToken]
+        [IgnoreAntiforgeryToken]
         [SwaggerOperation("SearchPost")]
         // [SwaggerResponse(statusCode: 200, type: typeof(InlineResponse200), description: "Acknowledgement of message received")]
         public virtual IActionResult SearchPost([FromBody] SearchBody body)
@@ -67,7 +67,7 @@ namespace bpp.Controllers
         [HttpPost]
         [Route("/select")]
         [ValidateModelState]
-        [ValidateAntiForgeryToken]
+        [IgnoreAntiforgeryToken]
         [SwaggerOperation("SelectPost")]
         //[SwaggerResponse(statusCode: 200, type: typeof(InlineResponse200), description: "Acknowledgement of message received")]
         public virtual IActionResult SelectPost([FromBody] SelectBody body)
@@ -87,7 +87,7 @@ namespace bpp.Controllers
         [HttpPost]
         [Route("/confirm")]
         [ValidateModelState]
-        [ValidateAntiForgeryToken]
+        [IgnoreAntiforgeryToken]
         [SwaggerOperation("ConfirmPost")]
         //[SwaggerResponse(statusCode: 200, type: typeof(InlineResponse200), description: "Acknowledgement of message received")]
         public virtual IActionResult ConfirmPost([FromBody] ConfirmBody body)
@@ -113,7 +113,7 @@ namespace bpp.Controllers
         [HttpPost]
         [Route("/init")]
         [ValidateModelState]
-        [ValidateAntiForgeryToken]
+        [IgnoreAntiforgeryToken]
         [SwaggerOperation("InitPost")]
         //[SwaggerResponse(statusCode: 200, type: typeof(InlineResponse200), description: "Acknowledgement of message received")]
         public virtual IActionResult InitPost([FromBody] InitBody body)
@@ -137,7 +137,7 @@ namespace bpp.Controllers
         [HttpPost]
         [Route("/status")]
         [ValidateModelState]
-        [ValidateAntiForgeryToken]
+        [IgnoreAntiforgeryToken]
         [SwaggerOperation("StatusPost")]
         //[SwaggerResponse(statusCode: 200, type: typeof(InlineResponse200), description: "Acknowledgement of message received")]
         public virtual IActionResult StatusPost([FromBody] StatusBody body)

@@ -68,43 +68,56 @@ namespace bpp.Helpers
             onStatusBody.Context.BapUri = _statusBody.Context.BapUri;
             onStatusBody.Context.BppId = Environment.GetEnvironmentVariable(EnvironmentVariables.BPP_SUBSCRIBER_ID);
             onStatusBody.Context.BppUri = Environment.GetEnvironmentVariable(EnvironmentVariables.BPP_URL);
-            onStatusBody.Message.Order.Id = applicationDetails.id;
-            onStatusBody.Message.Order.Items.Add(GetJobDetails(applicationDetails.jobid));
-            onStatusBody.Message.Order.Fulfillments.Add(GetFulfillment(applicationDetails));
-            onStatusBody.Message.Order.Provider = GetProvider(applicationDetails);
 
-            if (onStatusBody.Message.Order.Items.Count > 0)
+
+            if (applicationDetails != null && !string.IsNullOrEmpty(applicationDetails.jobid) && !string.IsNullOrEmpty(applicationDetails.id))
             {
-                try
-                {
-                    var json = JsonConvert.SerializeObject(onStatusBody, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+                onStatusBody.Message.Order.Id = applicationDetails.id;
+                onStatusBody.Message.Order.Items.Add(GetJobDetails(applicationDetails.jobid));
+                onStatusBody.Message.Order.Fulfillments.Add(GetFulfillment(applicationDetails));
+                onStatusBody.Message.Order.Provider = GetProvider(applicationDetails);
 
-                    var data = new StringContent(json, Encoding.UTF8, BPPConstants.RESPONSE_MEDIA_TYPE);
-
-                    var url = _statusBody.Context.BapUri + BPPConstants.ON_STATUS_REPOSNE_URL_PATH;
-                    using var postclient = new HttpClient();
-                    postclient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue
-                        (
-                        BPPConstants.SIGNATURE_IDENTIFIER,
-                        AuthUtil.createAuthorizationHeader(json)
-                        );
-
-                    var postResponse = await postclient.PostAsync(url, data);
-
-                    var result = postResponse.Content.ReadAsStringAsync().Result;
-                    _logger.LogInformation("On_status call result: " + result);
-
-                }
-                catch (HttpRequestException e)
-                {
-                    _logger.LogError("\nException Caught in On_status API call to BAP !");
-                    _logger.LogError("Message :{0} ", e.Message);
-                }
             }
             else
             {
-                _logger.LogInformation("No job found for given application TID : " + applicationDetails.id);
+                onStatusBody.Message = null;
+                onStatusBody.Error = new Error() { Message = "Application details is not found for given ID " };
             }
+
+            try
+            {
+
+                HttpClient postclient = await SendNetworkResponse(onStatusBody);
+
+            }
+            catch (HttpRequestException e)
+            {
+                _logger.LogError("\nException Caught in On_status API call to BAP !");
+                _logger.LogError("Message :{0} ", e.Message);
+
+            }
+
+        }
+
+        private async Task<HttpClient> SendNetworkResponse(OnConfirmBody onStatusBody)
+        {
+            var json = JsonConvert.SerializeObject(onStatusBody, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+
+            var data = new StringContent(json, Encoding.UTF8, BPPConstants.RESPONSE_MEDIA_TYPE);
+
+            var url = _statusBody.Context.BapUri + BPPConstants.ON_STATUS_REPOSNE_URL_PATH;
+            var postclient = new HttpClient();
+            postclient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue
+                (
+                BPPConstants.SIGNATURE_IDENTIFIER,
+                AuthUtil.createAuthorizationHeader(json)
+                );
+
+            var postResponse = await postclient.PostAsync(url, data);
+
+            var result = postResponse.Content.ReadAsStringAsync().Result;
+            _logger.LogInformation("On_status call result: " + result);
+            return postclient;
         }
 
         private Provider GetProvider(Application applicationDetails)

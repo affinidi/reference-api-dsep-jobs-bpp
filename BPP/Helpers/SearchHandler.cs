@@ -115,6 +115,7 @@ namespace bpp.Helpers
                 //search end
                 else
                 {
+                    SetContext(query, result);
                     result.Error = new Error() { Message = "No Job found for current query: TID : " + query.Context.TransactionId };
                 }
 
