@@ -180,8 +180,8 @@ namespace bpp.Helpers
             }
 
             };
-
-            onConfirmBody.Message.Order.Xinput = body.Message.Order.Xinput;
+            if (!string.IsNullOrEmpty(body.Message.Order?.Xinput?.Form?.Url))
+                onConfirmBody.Message.Order.Xinput = body.Message.Order.Xinput;
 
             try
             {

@@ -111,6 +111,41 @@ namespace search.Controllers
 
         }
 
+        [HttpDelete]
+        [Route("jobs/{id}")]
+        public IActionResult DeleteJobbyId(string id)
+        {
+
+            var result = _opensearchHandler.DeleteJobbyId(id);
+            if (string.IsNullOrEmpty(result))
+            {
+                return new ContentResult() { Content = "Job not found", StatusCode = 404 };
+            }
+            else
+            {
+                return new ContentResult() { Content = result, StatusCode = 404 };
+            }
+
+
+        }
+        [HttpDelete]
+        [Route("applications/{id}")]
+        public IActionResult DeleteApplicationbyId(string id)
+        {
+
+            var result = _opensearchHandler.DeletApplbyId(id);
+            if (string.IsNullOrEmpty(result))
+            {
+                return new ContentResult() { Content = "Application not found", StatusCode = 404 };
+            }
+            else
+            {
+                return new ContentResult() { Content = result, StatusCode = 404 };
+            }
+
+
+        }
+
         private IEnumerable<Job> ProviderBasedSearch(Query query)
         {
             List<Job> jobs = new List<Job>();

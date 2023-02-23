@@ -1,7 +1,7 @@
 
 FROM mcr.microsoft.com/dotnet/aspnet:3.1-alpine AS base
 WORKDIR /app
-EXPOSE 8080
+EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:3.1-alpine AS build
@@ -20,15 +20,5 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 RUN apk upgrade
-
-RUN adduser \
-  --disabled-password \
-  --home /app \
-  --gecos '' app \
-  && chown -R app /app
-USER app
-WORKDIR /app
-#COPY --from=build-env /app/out .
-EXPOSE 8080
 
 ENTRYPOINT ["dotnet", "search.dll"]

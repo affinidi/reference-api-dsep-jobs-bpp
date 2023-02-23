@@ -29,7 +29,10 @@
         "bpp_privatekey": "ajUi9HaYLyw/VckpiBvYGmj6FuHUcodOh0B12dipn1K0Wq1CSLxHpTNFmNUodSIzvp3lyOg/Wq2cIkCA0k7y1Q==",
         "bpp_subscriber_id": "your-bpp-id",
         "bpp_unique_key_id": "bpp_unique_key_id",
-        "save_xinput_url": "http://localhost:5000/xinput"
+        "save_xinput_url": "http://localhost:5000/xinput",
+        "verify_signature": "False",
+        "dsep_registry_url": "https://registry.becknprotocol.io/subscribers/lookup",
+        "verify_proxy_signature": "False"
       }
     },
     "Docker": {

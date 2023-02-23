@@ -1,68 +1,51 @@
-<<<<<<< Updated upstream
-﻿<Properties StartupConfiguration="{B13A4A6C-53DA-41A3-91F9-341AC778A84B}|Default">
-  <MonoDevelop.Ide.ItemProperties.bpp PreferredExecutionTarget="/Applications/Google Chrome.app" />
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+﻿<Properties StartupConfiguration="{BD6B4382-C4B0-4154-82C8-BB016DBA3114}|Default">
   <MonoDevelop.Ide.ItemProperties.search PreferredExecutionTarget="/Applications/Google Chrome.app" />
-  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
-      <Breakpoint file="/Volumes/Data-disk/ws/WS-gl/dsep-bpp/SearchApi/Controllers/OpensearchController.cs" relfile="SearchApi/Controllers/OpensearchController.cs" line="48" column="1" />
-      <Breakpoint file="/Volumes/Data-disk/ws/WS-gl/dsep-bpp/SearchApi/Controllers/OpensearchController.cs" relfile="SearchApi/Controllers/OpensearchController.cs" line="89" column="1" />
+      <Breakpoint file="/Volumes/Data-disk/ws/WS-gl/dsep-bpp/BPP/DSEPSigVerivication.cs" relfile="BPP/DSEPSigVerivication.cs" line="113" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
-  <MonoDevelop.Ide.Workbench ActiveDocument="SearchApi/Controllers/OpensearchController.cs">
-    <Files>
-      <File FileName="BPP/Dockerfile" Line="21" Column="5" />
-      <File FileName="SearchApi/Dockerfile" Line="22" Column="16" />
-      <File FileName="SearchApi/Controllers/OpensearchController.cs" Line="46" Column="23" />
-      <File FileName="BPP/Helpers/SearchHandler.cs" Line="138" Column="76" />
-=======
-﻿<Properties StartupConfiguration="{BD6B4382-C4B0-4154-82C8-BB016DBA3114}|Default">
   <DisabledProjects>
-    <String>BAP/BAP.csproj</String>
     <String>../../../../Users/sanjaykumar/Projects/Beckn/Beckn/Beckn.csproj</String>
+    <String>BAP/BAP.csproj</String>
   </DisabledProjects>
-  <MonoDevelop.Ide.ItemProperties.search PreferredExecutionTarget="/Applications/Google Chrome.app" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="BPP/Controllers/BecknProviderPlatformBPPApi.cs">
+  <MonoDevelop.Ide.ItemProperties.bpp PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="BPP/DSEPSigVerivication.cs">
     <Files>
-      <File FileName="BPP/Controllers/BecknProviderPlatformBPPApi.cs" Line="77" Column="27" />
->>>>>>> Stashed changes
+      <File FileName="BPP/DSEPSigVerivication.cs" Line="151" Column="88" />
+      <File FileName="BPP/Helpers/NetworkParticipantCache.cs" Line="29" Column="1" />
+      <File FileName="BPP/Startup.cs" Line="65" Column="54" />
+      <File FileName="BPP/Helpers/AuthUtil.cs" Line="61" Column="47" />
+      <File FileName="BPP/EnvironmentVariables.cs" />
+      <File FileName="BPP/appsettings.json" />
+      <File FileName="BPP/Program.cs" />
+      <File FileName="BPP/Helpers/ConfirmHandler.cs" Line="50" Column="150" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="DSEP" expanded="True">
             <Node name="bpp" expanded="True">
+              <Node name="Dependencies" expanded="True">
+                <Node name="PackageDependencies" expanded="True" />
+              </Node>
               <Node name="Helpers" expanded="True" />
-            </Node>
-            <Node name="search" expanded="True">
-              <Node name="Controllers" expanded="True" />
+              <Node name="Models" expanded="True" />
             </Node>
           </Node>
         </State>
       </Pad>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State>
+          <Value>_networkParticipantCache.networkCache</Value>
+          <Value>subscriberDetails</Value>
+          <Value>e</Value>
+          <Value>parts</Value>
+        </State>
+      </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
-<<<<<<< Updated upstream
-  <DisabledProjects>
-    <String>BAP/BAP.csproj</String>
-    <String>../../../../Users/sanjaykumar/Projects/Beckn/Beckn/Beckn.csproj</String>
-  </DisabledProjects>
-=======
-  <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore>
-      <Breakpoint enabled="false" file="/Volumes/Data-disk/ws/WS-gl/dsep-bpp/SearchApi/Controllers/OpensearchController.cs" relfile="SearchApi/Controllers/OpensearchController.cs" line="54" column="1" />
-      <Breakpoint enabled="false" file="/Volumes/Data-disk/ws/WS-gl/dsep-bpp/SearchApi/Controllers/OpensearchController.cs" relfile="SearchApi/Controllers/OpensearchController.cs" line="95" column="1" />
-      <Breakpoint enabled="false" file="/Volumes/Data-disk/ws/WS-gl/dsep-bpp/BPP/Controllers/XinputController.cs" relfile="BPP/Controllers/XinputController.cs" line="33" column="1" />
-      <Breakpoint file="/Volumes/Data-disk/ws/WS-gl/dsep-bpp/BPP/Controllers/BecknProviderPlatformBPPApi.cs" relfile="BPP/Controllers/BecknProviderPlatformBPPApi.cs" line="61" column="1" />
-      <Breakpoint file="/Volumes/Data-disk/ws/WS-gl/dsep-bpp/BPP/Controllers/BecknProviderPlatformBPPApi.cs" relfile="BPP/Controllers/BecknProviderPlatformBPPApi.cs" line="69" column="1" />
-      <Breakpoint file="/Volumes/Data-disk/ws/WS-gl/dsep-bpp/BPP/Controllers/BecknProviderPlatformBPPApi.cs" relfile="BPP/Controllers/BecknProviderPlatformBPPApi.cs" line="64" column="1" />
-    </BreakpointStore>
-  </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.ItemProperties.bpp PreferredExecutionTarget="/Applications/Google Chrome.app" />
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MultiItemStartupConfigurations />
->>>>>>> Stashed changes
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>

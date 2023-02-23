@@ -35,6 +35,22 @@ namespace search
 
         }
 
+        internal string DeletApplbyId(string id)
+        {
+            _logger.LogInformation("Delete request for Appplication ID : " + id);
+            var deleteResponse = _client.Delete<Application>(id, idx => idx.Index(Constant.INDEX_APPLICATION));
+
+            return (deleteResponse.IsValid ? (deleteResponse.Result.ToString()) : null);
+        }
+
+        internal string DeleteJobbyId(string id)
+        {
+            _logger.LogInformation("Delete request for job ID : " + id);
+            var deleteResponse = _client.Delete<Job>(id, idx => idx.Index(Constant.INDEX_JOB));
+
+            return (deleteResponse.IsValid ? (deleteResponse.Result.ToString()) : null);
+        }
+
         internal Job Find(string id)
         {
             _logger.LogInformation("select job request for ID : " + id);

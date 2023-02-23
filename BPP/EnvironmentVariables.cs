@@ -14,6 +14,11 @@ namespace bpp
         public const string BPP_UNIQUE_KEY_ID = "bpp_unique_key_id";
         public const string BPP_URL = "bpp_url";
         public const string BPP_XINPUT_URL = "bpp_Xinput_url";
+        public const string VERIFY_SIGNATURE = "verify_signature";
+
+        public static string DSEP_REGISTRY_URL = "dsep_registry_url";
+
+        public static string VERIFY_PROXY_SIGNATURE = "verify_proxy_signature";
 
         public static List<string> GetFields()
         {

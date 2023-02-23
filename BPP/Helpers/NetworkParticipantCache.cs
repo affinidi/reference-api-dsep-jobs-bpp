@@ -11,7 +11,7 @@ namespace bpp.Helpers
 {
     public class NetworkParticipantCache
     {
-        List<NetworkParticipant> networkCache;
+        public List<NetworkParticipant> networkCache;
         ILogger _logger;
         public NetworkParticipantCache(ILoggerFactory logfactory)
         {
@@ -20,7 +20,8 @@ namespace bpp.Helpers
             var json = "{}";
             var data = new StringContent(json, Encoding.UTF8, BPPConstants.RESPONSE_MEDIA_TYPE);
 
-            var url = "https://registry.becknprotocol.io/subscribers/lookup";
+            var url = Environment.GetEnvironmentVariable(EnvironmentVariables.DSEP_REGISTRY_URL);
+            //"https://registry.becknprotocol.io/subscribers/lookup";
             using var client = new HttpClient();
             //client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("authorization", AuthUtil.createAuthorizationHeader(json));
             var response = client.PostAsync(url, data).Result;
