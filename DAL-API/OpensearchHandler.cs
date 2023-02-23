@@ -194,9 +194,8 @@ namespace search
                     Size = 10,
 
                     Query = new MatchQuery { Field = "title", Query = jobTitle } &&
-                                                       new TermsQuery { Field = "skills", Terms = query.skills }
-
-                                                       //new MatchQuery { Field = "description", Query = string.Join(",", query.skills.Select(x => x)) }
+                            //new TermsQuery { Field = "skills", Terms = query.skills }
+                            new MatchQuery { Field = "skills", Query = string.Join(",", query.skills.Select(x => x)) }
                 };
 
                 searchResponse = _client.Search<Job>(request);

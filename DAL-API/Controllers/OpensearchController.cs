@@ -97,7 +97,7 @@ namespace search.Controllers
             _logger.LogInformation(JsonConvert.SerializeObject(query));
 
             var jobs = new List<Job>();
-            if (!string.IsNullOrEmpty(query.title))
+            if (!string.IsNullOrEmpty(query.title) || query.skills.Count > 0)
             {
                 jobs.AddRange(ItemBasedSearch(query));
             }

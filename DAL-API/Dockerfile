@@ -7,18 +7,18 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:3.1-alpine AS build
 WORKDIR /src
 COPY ["nuget.config", "."]
-COPY ["search.csproj", "."]
-RUN dotnet restore "search.csproj"
+COPY ["DAL-API.csproj", "."]
+RUN dotnet restore "DAL-API.csproj"
 COPY . .
 WORKDIR "/src"
-RUN dotnet build "search.csproj" -c Release -o /app/build
+RUN dotnet build "DAL-API.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "search.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "DAL-API.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 RUN apk upgrade
 
-ENTRYPOINT ["dotnet", "search.dll"]
+ENTRYPOINT ["dotnet", "DAL-API.dll"]
