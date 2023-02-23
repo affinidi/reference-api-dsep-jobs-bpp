@@ -78,6 +78,7 @@ namespace bpp.Helpers
                     _logger.LogInformation("Error While saving application");
                     _logger.LogInformation(e.Message);
                     _logger.LogInformation(response?.Content.ReadAsStringAsync().Result);
+                    await SendError(body);
 
                 }
 
