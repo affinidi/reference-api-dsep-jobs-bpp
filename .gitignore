@@ -55,3 +55,6 @@ SearchApi/obj/project.nuget.cache
 SearchApi/obj/project.assets.json
 BAP/obj/Debug/netcoreapp3.1/BAP.assets.cache
 BAP/obj/Debug/netcoreapp3.1/BAP.GeneratedMSBuildEditorConfig.editorconfig
+DAL-API/bin/*
+DAL-API/obj/*
+
