@@ -42,12 +42,12 @@ namespace bpp
             bool validProxySignature = false;
             Context dsepContext;
 
-            string requestBody = await ReadAndStoreRequestBody(context.Request);
-            _logger.LogInformation("New request  : " + requestBody);
 
             if (verifySignature && context.Request.Method == "POST")
             {
 
+                string requestBody = await ReadAndStoreRequestBody(context.Request);
+                _logger.LogInformation("New request  : " + requestBody);
                 // Check if header exists
                 if (!context.Request.Headers.ContainsKey("Authorization"))
                 {
