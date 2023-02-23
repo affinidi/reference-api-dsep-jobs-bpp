@@ -8,6 +8,9 @@
 
 
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'search' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <AssemblyName>DAL-API</AssemblyName>
+  </PropertyGroup>
   <ItemGroup>
     <None Remove="Newtonsoft.Json" />
     <None Remove="OpenSearch.Client" />
