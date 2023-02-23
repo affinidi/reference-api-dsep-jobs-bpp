@@ -9,6 +9,10 @@ using Sodium;
 using System.Text.Unicode;
 using System.Text;
 using System.Security.Cryptography.Xml;
+using System.Threading.Tasks;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Utilities.Encoders;
+using Org.BouncyCastle.Crypto.Signers;
 
 namespace bpp.Helpers
 {
@@ -30,7 +34,7 @@ namespace bpp.Helpers
             var subscriber_id = Environment.GetEnvironmentVariable(EnvironmentVariables.BPP_SUBSCRIBER_ID);
             var unique_key_id = Environment.GetEnvironmentVariable(EnvironmentVariables.BPP_UNIQUE_KEY_ID);
             //creates header data to be sent as Authorization key 
-            string header = "keyId=" + subscriber_id + "|" + unique_key_id + "|" + "ed25519, algorithm = ed25519, created = " + sg.created + ", expires = " + sg.expires + ", headers = (" + sg.created + ") (" + sg.expires + ") digest, signature = " + signature;
+            string header = "keyId=" + subscriber_id + "|" + unique_key_id + "|" + "ed25519, algorithm = ed25519, created = " + sg.created + ", expires = " + sg.expires + ", headers = (created) (expires) digest, signature = " + signature;
             //string header =   $"Signature keyId = " ${subscriber_id}"|"${config.unique_key_id}|ed25519", algorithm = "ed25519", created = "${created}", expires = "${expires}", headers = "(created) (expires) digest", signature = "${signature}"";
             return header;
         }
@@ -70,6 +74,31 @@ namespace bpp.Helpers
         }
 
 
+        public static bool Verify(string sourceSignature, string requestBody, string sourcePublicKey)
+        {
+            bool valid = false;
+            var utf8 = new UTF8Encoding();
+
+            Sodium.PublicKeyAuth.VerifyDetached(
+                utf8.GetBytes(sourceSignature)
+                , utf8.GetBytes(requestBody)
+                , Convert.FromBase64String(sourcePublicKey));
+
+            return valid;
+        }
+
+        public static Task<bool> VerifySignature(string publicKey, string dataToVerify, string signature)
+        {
+            var publicKeyParam = new Ed25519PublicKeyParameters(Convert.FromBase64String(publicKey));
+            var dataToVerifyBytes = Encoding.UTF8.GetBytes(dataToVerify);
+            var signatureBytes = Encoding.UTF8.GetBytes(signature);
+
+            var verifier = new Ed25519Signer();
+            verifier.Init(false, publicKeyParam);
+            verifier.BlockUpdate(dataToVerifyBytes, 0, dataToVerifyBytes.Length);
+            var isVerified = verifier.VerifySignature(signatureBytes);
+            return Task.FromResult(isVerified);
+        }
 
     }
 }

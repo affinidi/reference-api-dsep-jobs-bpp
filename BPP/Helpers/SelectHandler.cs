@@ -150,8 +150,15 @@ namespace bpp.Helpers
             selectedItem.Id = selectedjob.id;
             selectedItem.Descriptor = new Descriptor() { Name = selectedjob.title, LongDesc = selectedjob.description };
             selectedItem.LocationIds = selectedItem.FulfillmentIds = new List<string>();
-            selectedItem.Xinput.Form.Url = Environment.GetEnvironmentVariable(EnvironmentVariables.BPP_XINPUT_URL)
-                                            + BPPConstants.URL_PATH_XINPUT_FORM_PATH + selectedjob.id;
+            selectedItem.Xinput = new XInput()
+            {
+                Form = new Form()
+                {
+                    Url = Environment.GetEnvironmentVariable(EnvironmentVariables.BPP_XINPUT_URL)
+                                            + BPPConstants.URL_PATH_XINPUT_FORM_PATH + selectedjob.id
+                }
+
+            };
 
             if (selectedjob.responsibilities?.Count > 0)
             {
