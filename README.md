@@ -1,13 +1,27 @@
 <div align="center">
 
-# Job and Internship BPP Service
+# Decentralised Skilling and Education Protocol: Jobs and Internships
 
 
 
 </br>
+This document provides a reference Beckn Provider Platform (BPP) implementation for the Jobs and Internships track complaint to DSEP spec v1.0.0.
 Job and Internship BPP Service enables  interactions between job providers/employers and job seekrs. The capability is designed to establish a transparent ecosystem that fosters learning, connection, problem-solving, and knowledge-sharing within communities.
 
 </div>
+
+## Deployment and Network Registration Details
+The reference BPP implemented in this repository is onboarded on the Beckn Gateway and Beckn Gateway Registry under the Jobs and Internships category.
+- [BPP Deployed URL](https://6vs8xnx5i7.execute-api.ap-south-1.amazonaws.com/dsep) [swaggger](https://6vs8xnx5i7.execute-api.ap-south-1.amazonaws.com/dsep/swagger/index.html)
+- BAP [use postman collection to test the BPP](https://github.com/beckn/DSEP-Specification/blob/master/artefacts/postman-collections/jobs-internships/jobs-internships-postman-collection.json)
+- BPP Network Participant Id: [affinidi.com.bpp](https://github.com/affinidi/reference-api-dsep-jobs-bpp)
+- [Network Participant Information on Beckn Registry](https://registry.becknprotocol.io/network_participants/search/Affinidi/network_participants/show/359)
+
+
+## Architecture
+
+  <img width="1188" alt="image" src="https://user-images.githubusercontent.com/125359926/221154141-80eef096-80e8-40d1-87f2-0d94c9973dcb.png">
+
 
 ## Tech stack
 
