@@ -21,6 +21,19 @@ This repository contains a reference implementation of the BPP that has been onb
 
   <img width="1188" alt="image" src="https://user-images.githubusercontent.com/125359926/221154141-80eef096-80e8-40d1-87f2-0d94c9973dcb.png">
 
+## Supported methods 
+
+- /search: 
+> This endpoint allows for searching of jobs and internship via a direct DSEP complaint request to the BPP using the context.domain as dsep:jobs
+- /select: 
+> This endpoint allows for selecting one job or internship to see more details about selected item by the user. The context domain for this method should be dsep:jobs. In the reference course discovery platform implementation this endpoint is called when expanding a particular job to view its details.
+- /init: 
+> This endpoint allows for initiating application for job or internship by getting a validation from the BPP for posted Xinput data. The context domain for this method should be dsep:jobs.
+- /confirm: 
+> This endpoint confirms the submission of an application after successful validation during the Init request.
+- /status:
+> This endpoint allows users to retrieve the status of their job application. The application status may change over time, starting from the initial screening phase, progressing to either Accepted or Rejected, and ultimately, if selected, leading to the Onboarding phase. 
+
 
 ## Tech stack
 
