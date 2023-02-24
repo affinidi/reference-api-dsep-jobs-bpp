@@ -42,8 +42,8 @@ This repository contains a reference implementation of the BPP that has been onb
 
 ## Tech stack
 
--   .Net- 6.0 
--   OpenSearch
+-   .Net 6.0 
+-   OpenSearch 2.4.0
 
 
 ## Prerequisite to run the BPP API
