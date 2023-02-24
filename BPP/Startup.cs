@@ -119,7 +119,7 @@ namespace bpp
             app.UseSwaggerUI(c =>
             {
                 //TODO: Either use the SwaggerGen generated Swagger contract (generated from C# classes)
-                c.SwaggerEndpoint("/swagger/DSEP-bpp/swagger.json", "");
+                c.SwaggerEndpoint("./DSEP-bpp/swagger.json", "");
 
 
             });
