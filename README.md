@@ -2,12 +2,14 @@
 
 # Decentralised Skilling and Education Protocol: Jobs and Internships
 
-
-
-</br>
-This document serves as a reference for the implementation of the Beckn Provider Platform (BPP) specifically tailored to the Jobs and Internships track, compliant with the DSEP spec v1.0.0. The Job and Internship BPP Service facilitates interactions between job providers/employers and job seekers, with the aim of establishing a transparent ecosystem that promotes learning, connection, problem-solving, and knowledge-sharing within communities.
-
 </div>
+
+<div>
+Decentralized Skilling and Education Protocol project provides open interoperable specifcations for creating decentralized skills and education networks. It is an adaptation of beckn protocol core specification with added taxonomies and sample network policies for the skills and education sector.
+
+
+This document serves as a reference for the implementation of the Beckn Provider Platform (BPP) specifically tailored to the Jobs and Internships track, compliant with the DSEP spec v1.0.0. The Job and Internship BPP Service facilitates interactions between job providers/employers and job seekers, with the aim of establishing a transparent ecosystem that promotes learning, connection, problem-solving, and knowledge-sharing within communities.
+  </div>
 
 ## Deployment and Network Registration Details
 This repository contains a reference implementation of the BPP that has been onboarded on the Beckn Gateway and Beckn Gateway Registry under the Jobs and Internships category.
