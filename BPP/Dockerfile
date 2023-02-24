@@ -1,7 +1,8 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1-alpine AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:7.0-alpine AS build-env
 WORKDIR /app
 EXPOSE 8088
 EXPOSE 443
+RUN apk upgrade
 
 ENV DOTNET_CLI_TELEMETRY_OPTOUT 1
 
@@ -15,7 +16,7 @@ RUN dotnet publish -c Release -o out
 copy ./StaticFiles/Xinput.txt /app/out/StaticFiles/Xinput.txt
 # build runtime image
 
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-alpine
+FROM mcr.microsoft.com/dotnet/aspnet:7.0-alpine
 RUN apk upgrade
 RUN adduser \
   --disabled-password \
