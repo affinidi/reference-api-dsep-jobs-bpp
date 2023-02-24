@@ -24,9 +24,9 @@ This repository contains a reference implementation of the BPP that has been onb
 ## Supported methods 
 
 - /search: 
-> This endpoint allows for searching of jobs and internship via a direct DSEP complaint request to the BPP using the context.domain as dsep:jobs
+> This endpoint enables users to search for jobs and internships by sending a direct DSEP-compliant request to the BPP with the context.domain set as dsep:jobs. This allows for a targeted and efficient search experience for users.
 - /select: 
-> This endpoint allows for selecting one job or internship to see more details about selected item by the user. The context domain for this method should be dsep:jobs. In the reference course discovery platform implementation this endpoint is called when expanding a particular job to view its details.
+> This endpoint enables users to select a specific job or internship and retrieve more detailed information about it. The context domain for this method should be set as dsep:jobs. In the reference implementation of the course discovery platform, this endpoint is triggered when a user expands a particular job to view its details.
 - /init: 
 > This endpoint allows for initiating application for job or internship by getting a validation from the BPP for posted Xinput data. The context domain for this method should be dsep:jobs.
 - /confirm: 
