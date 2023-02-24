@@ -25,13 +25,13 @@ This repository contains a reference implementation of the BPP that has been onb
 ## Tech stack
 
 -   .Net- 6.0 
--   Opensearch
+-   OpenSearch
 
 
 ## Prerequisite to run the BPP API
 
--   An API to query the job catalogs : in this example DAL-API (Data access layer- API ) 
--   Enviironment varaibles as below 
+-   An API to query the job catalogue : in this example DAL-API (Data access layer- API ) 
+-   Environment variables as below  
 
   --
 
@@ -49,7 +49,7 @@ This repository contains a reference implementation of the BPP that has been onb
     
 ## Prerequisite to run the DAL-API
 
-- ANY document DB with rest API interface : this example uses Opensearch to query the catalog
+- ANY document DB with rest API interface : this example uses OpenSearch to query the catalogue
 
 ## Setup Options
 
@@ -67,10 +67,10 @@ Job and Internship BPP service can be setup in local using docker images:
 
   - BPP
   - Data access layer API 
-  - Opensearch 
+  - OpenSearch 
 
   
-#### builiding image 
+#### building docker  image for service 
 - BPP 
 
   Navigate to BPP folder 
@@ -88,7 +88,7 @@ to start the containers
 
 > docker-compose - f < docker-compose-local.yml file location > up -d 
 
-> If you do not want to build the images and use the avaialable images to runthe setup, use the default docker compose file 
+> If you do not want to build the images and use the available images to run the setup, use the default docker compose file 
 https://github.com/sanjay95/reference_DSEP_BPP/blob/main/docker-compose.yml
 to start the containers 
 
@@ -98,7 +98,7 @@ to start the containers
 - http://localhost:8088/confirm
 - http://localhost:8088/status
 
-##### JOb Portal APIs will be available at 
+##### Job Portal APIs will be available at 
 http://localhost:8080/opensearch
 
 
