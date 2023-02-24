@@ -1,3 +1,11 @@
+## Deployment and Network Registration Details
+This repository contains a reference implementation of the BPP that has been onboarded on the Beckn Gateway and Beckn Gateway Registry under the Jobs and Internships category.
+- [BPP Deployed URL](https://6vs8xnx5i7.execute-api.ap-south-1.amazonaws.com/dsep) [swaggger](https://6vs8xnx5i7.execute-api.ap-south-1.amazonaws.com/dsep/swagger/index.html)
+- BAP [use postman collection to test the BPP](https://github.com/beckn/DSEP-Specification/blob/master/artefacts/postman-collections/jobs-internships/jobs-internships-postman-collection.json)
+- BPP Network Participant Id: [affinidi.com.bpp](https://github.com/affinidi/reference-api-dsep-jobs-bpp)
+- [Network Participant Information on Beckn Registry](https://registry.becknprotocol.io/network_participants/search/Affinidi/network_participants/show/359)
+
+
 ## Supported methods 
 
 - /search: 
