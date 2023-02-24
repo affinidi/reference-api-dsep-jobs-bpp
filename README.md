@@ -5,13 +5,12 @@
 
 
 </br>
-This document provides a reference Beckn Provider Platform (BPP) implementation for the Jobs and Internships track complaint to DSEP spec v1.0.0.
-Job and Internship BPP Service enables  interactions between job providers/employers and job seekrs. The capability is designed to establish a transparent ecosystem that fosters learning, connection, problem-solving, and knowledge-sharing within communities.
+This document serves as a reference for the implementation of the Beckn Provider Platform (BPP) specifically tailored to the Jobs and Internships track, compliant with the DSEP spec v1.0.0. The Job and Internship BPP Service facilitates interactions between job providers/employers and job seekers, with the aim of establishing a transparent ecosystem that promotes learning, connection, problem-solving, and knowledge-sharing within communities.
 
 </div>
 
 ## Deployment and Network Registration Details
-The reference BPP implemented in this repository is onboarded on the Beckn Gateway and Beckn Gateway Registry under the Jobs and Internships category.
+This repository contains a reference implementation of the BPP that has been onboarded on the Beckn Gateway and Beckn Gateway Registry under the Jobs and Internships category.
 - [BPP Deployed URL](https://6vs8xnx5i7.execute-api.ap-south-1.amazonaws.com/dsep) [swaggger](https://6vs8xnx5i7.execute-api.ap-south-1.amazonaws.com/dsep/swagger/index.html)
 - BAP [use postman collection to test the BPP](https://github.com/beckn/DSEP-Specification/blob/master/artefacts/postman-collections/jobs-internships/jobs-internships-postman-collection.json)
 - BPP Network Participant Id: [affinidi.com.bpp](https://github.com/affinidi/reference-api-dsep-jobs-bpp)
