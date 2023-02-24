@@ -34,6 +34,9 @@ This repository contains a reference implementation of the BPP that has been onb
 - /status:
 > This endpoint allows users to retrieve the status of their job application. The application status may change over time, starting from the initial screening phase, progressing to either Accepted or Rejected, and ultimately, if selected, leading to the Onboarding phase. 
 
+#### Each of these API calls requires a BAP URL to send data back to the BAP. Therefore, the client (BAP) must expose the on_search, on_select, on_init, on_confirm, and on_status endpoints to receive the response from the BPP. These endpoints should be configured to receive the appropriate data format and handle the responses accordingly.
+
+
 
 ## Tech stack
 
